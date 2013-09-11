@@ -44,30 +44,33 @@
 inherit kernel
 require recipes-kernel/linux/linux-yocto.inc
 
-
+# Note: 3.10.X series is a long term kernel (karl)
+# https://www.kernel.org/category/releases.html
 LINUX_VERSION ?= "3.10.11"
 LINUX_VERSION_EXTENSION ?= "-custom"
-#KBRANCH ?= "3.10-at91"
+KBRANCH ?= "linux-3.10.y"
 #SRCREV="linux-3.10-at91"
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
 #SRC_URI = "git://github.com/linux4sam/linux-at91.git;protocol=git;branch=${KBRANCH};nocheckout=1"
 SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git;tag=v${LINUX_VERSION}"
+
+#SRC_URI = "https://www.kernel.org/pub/linux/kernel/v3.x/linux-${LINUX_VERSION}.tar.xz"
 SRC_URI += "file://defconfig"
+
+
 
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
 # tag: v3.4 76e10d158efb6d4516018846f60c2ab5501900bc
 #3.10.11
-SRCREV="85cdabba08d484bdcc4b25f0bbc23ac60c75aa5b"
+#SRCREV="85cdabba08d484bdcc4b25f0bbc23ac60c75aa5b"
+SRCREV="v3.10.11"
 
 #3.11.0
 #SRCREV="6e4664525b1db28f8c4e1130957f70a94c19213e"
 
-#3.10-at91
-#SRCREV="e2caf94de715be51df72b7f4ae8a5588f4a4ca0b"
-#SRCREV="linux-3.10-at91"
 
 #PV = "${LINUX_VERSION}+${SRCREV}"
 
