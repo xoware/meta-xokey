@@ -1,0 +1,12 @@
+#!/bin/sh
+
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
+
+
+mount |grep xokcfg && {
+  echo "firstboot has already been run"
+  exit;
+}
+
+flash_erase -j /dev/mtd7 0 0
+mount -t jffs2 /dev/mtdblock7  /xokcfg/

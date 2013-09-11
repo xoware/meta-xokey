@@ -1,0 +1,19 @@
+#!/bin/sh
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+COUNT=$(ls /etc/init.d/S* | wc -l)
+C=1
+for s in /etc/init.d/S*; do
+        if [ -x $s ]; then
+                $s start
+
+		PERCENT=$((100/$COUNT * $C))
+		echo "PROGRESS $PERCENT" 2>/dev/null
+        fi
+        C=$(($C+1))
+done
+
+if [ -x /etc/init.d/rc.local ]; then
+        /etc/init.d/rc.local start
+fi
+
