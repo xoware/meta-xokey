@@ -1,6 +1,6 @@
 DESCRIPTION = "Daemon to handle device specifc features."
 SECTION = "base"
-LICENSE = "GPLv2"
+LICENSE = "CLOSED"
 LIC_FILES_CHKSUM = "file://COPYING;md5=26e719a279edbfa8b25e9ccfead36d85"
 DEPENDS = "libmicrohttpd libnl jansson file"
 
