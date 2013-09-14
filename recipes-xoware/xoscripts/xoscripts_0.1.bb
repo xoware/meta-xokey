@@ -8,6 +8,7 @@ SRC_URI =  "file://profile \
             file://firstboot \
             file://rcS \
             file://openssl.cnf \
+            file://S80xokd \
             file://check_ssl.sh"
 
 PACKAGES = "${PN}"
@@ -28,6 +29,7 @@ do_install () {
 	install -m 0444 ${WORKDIR}/.keep ${D}/xokcfg/
 	install -m 0755 ${WORKDIR}/firstboot ${D}/etc/init.d/S10firstboot
 	install -m 0755 ${WORKDIR}/rcS ${D}${sysconfdir}/init.d/rcS
+	install -m 0755 ${WORKDIR}/S80xokd ${D}${sysconfdir}/init.d/
 
 	install -m 0444 ${WORKDIR}/openssl.cnf ${D}/usr/lib/ssl/openssl.cnf
 	ln -sf  syslog.busybox ${D}/etc/init.d/S00syslog
