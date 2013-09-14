@@ -42,18 +42,24 @@
 #
 
 inherit kernel
-require recipes-kernel/linux/linux-yocto.inc
+#require recipes-kernel/linux/linux-yocto.inc
 
+LICENSE = "GPLv2"
+LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
+DEFAULT_PREFERENCE = "-1"
 # Note: 3.10.X series is a long term kernel (karl)
 # https://www.kernel.org/category/releases.html
-LINUX_VERSION ?= "3.10.11"
+LINUX_VERSION = "3.10.11"
 LINUX_VERSION_EXTENSION ?= "-custom"
 KBRANCH ?= "linux-3.10.y"
-#SRCREV="linux-3.10-at91"
+META = "meta"
+
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
 #SRC_URI = "git://github.com/linux4sam/linux-at91.git;protocol=git;branch=${KBRANCH};nocheckout=1"
-SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git;tag=v${LINUX_VERSION}"
+#SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git;tag=v${LINUX_VERSION}"
+SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git;branch=${KBRANCH}"
+
 
 #SRC_URI = "https://www.kernel.org/pub/linux/kernel/v3.x/linux-${LINUX_VERSION}.tar.xz"
 SRC_URI += "file://defconfig"
@@ -68,14 +74,14 @@ SRC_URI += "file://defconfig"
 #SRCREV="85cdabba08d484bdcc4b25f0bbc23ac60c75aa5b"
 SRCREV="v3.10.11"
 
-#3.11.0
-#SRCREV="6e4664525b1db28f8c4e1130957f70a94c19213e"
-
 
 #PV = "${LINUX_VERSION}+${SRCREV}"
-
+PV = "${LINUX_VERSION}"
 
 PR = "r1"
+
+S = "${WORKDIR}/git"
+EXTRA_OEMAKE = "${PARALLEL_MAKE}"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
