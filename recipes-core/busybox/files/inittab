@@ -11,6 +11,9 @@
 
 ::sysinit:/etc/init.d/mdev
 
+#NOTE comment  this telnetd out, for now usefull for debug
+::sysinit:telnetd -l /bin/sh
+
 # Run any rc scripts
 ::sysinit:/etc/init.d/rcS
 
