@@ -19,8 +19,19 @@ EXOKEY_PKGS += "xoscripts"
 EXOKEY_PKGS += "mtd-utils"
 EXOKEY_PKGS += "mtd-utils-ubifs"
 EXOKEY_PKGS += "mtd-utils-jffs2"
-EXOKEY_PKGS += "openssl"
+EXOKEY_PKGS += "openssl openssl-engines"
 EXOKEY_PKGS += "openvpn"
+EXOKEY_PKGS += "cryptodev"
+EXOKEY_PKGS += "af-alg-engine"
+
+
+#Tools for now for debug/testing, remove for production
+EXOKEY_PKGS += "tcpdump"
+EXOKEY_PKGS += "strace"
+EXOKEY_PKGS += "socat"
+EXOKEY_PKGS += "cryptodev-tests"
+
+
 #install all kernel modules
 EXOKEY_PKGS += "kernel-modules"
 
