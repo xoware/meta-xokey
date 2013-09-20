@@ -40,10 +40,19 @@ python () {
 
 do_compile_append() {
         oe_runmake testprogs
+        cd extras
+	${TARGET_PREFIX}gcc -O3 -Wall -fPIC   -c -o eng_cryptodev.o eng_cryptodev.c -I${STAGING_INCDIR}
+	${TARGET_PREFIX}gcc --sysroot=${STAGING_DIR_TARGET} -shared -Wl,-soname,libcryptodev.so -lcrypto -o libcryptodev.so eng_cryptodev.o
 }
 
 do_install_append() {
         oe_runmake install_tests
+#	install -d ${D}/usr
+#	install -d ${D}/usr/lib
+#	install -d ${D}/usr/lib/ssl
+#	install -d ${D}/usr/lib/ssl/engines
+#	install -d ${D}/usr/lib/ssl/engines/
+#	install -m 0644 extras/libcryptodev.so ${D}/usr/lib/ssl/engines/
 }
 
 PACKAGES += "${PN}-tests"
