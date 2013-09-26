@@ -21,6 +21,7 @@ EXOKEY_PKGS += "mtd-utils-ubifs"
 EXOKEY_PKGS += "mtd-utils-jffs2"
 EXOKEY_PKGS += "openssl openssl-engines"
 EXOKEY_PKGS += "openvpn"
+EXOKEY_PKGS += "iptables"
 EXOKEY_PKGS += "cryptodev"
 EXOKEY_PKGS += "af-alg-engine"
 
