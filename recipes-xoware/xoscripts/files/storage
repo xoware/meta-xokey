@@ -2,6 +2,19 @@
 
 PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
 
+
+mount |grep storage && {
+  echo "storage mounted"
+  exit;
+}
+
+flash_erase -j /dev/mtd8 0 0
+mount -t jffs2 /dev/mtdblock8  /storage
+
+
+exit
+#below stuff obsolete 
+
 #TODO possibly remove this attach by putting it in kernel command line
 ubiattach /dev/ubi_ctrl -m 8
 mount -t ubifs ubi0:store  /storage
