@@ -27,6 +27,6 @@ if [ -d /etc/profile.d ]; then
 fi
 
 export PATH PS1 OPIEDIR QPEDIR QTDIR EDITOR TERM
-
+alias ls="ls --color"
 umask 022
 
