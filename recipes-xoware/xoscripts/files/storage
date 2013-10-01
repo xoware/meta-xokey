@@ -16,18 +16,18 @@ exit
 #below stuff obsolete 
 
 #TODO possibly remove this attach by putting it in kernel command line
-ubiattach /dev/ubi_ctrl -m 8
-mount -t ubifs ubi0:store  /storage
+# ubiattach /dev/ubi_ctrl -m 8
+# mount -t ubifs ubi0:store  /storage
 
-if [ $? = 0 ]; then
-  echo "Storage mounted"
-  exit
-fi;
-
-echo "initalize storage"
-
-flash_erase /dev/mtd8 0 0
-ubiattach /dev/ubi_ctrl -m 8
-ubimkvol /dev/ubi0 -N store -m
-mount -t ubifs ubi0:store  /storage
+# if [ $? = 0 ]; then
+#   echo "Storage mounted"
+#   exit
+# fi;
+# 
+# echo "initalize storage"
+# 
+# flash_erase /dev/mtd8 0 0
+# ubiattach /dev/ubi_ctrl -m 8
+# ubimkvol /dev/ubi0 -N store -m
+# mount -t ubifs ubi0:store  /storage
 
