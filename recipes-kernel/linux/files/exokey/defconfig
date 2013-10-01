@@ -400,7 +400,7 @@ CONFIG_ZBOOT_ROM_TEXT=0x0
 CONFIG_ZBOOT_ROM_BSS=0x0
 CONFIG_ARM_APPENDED_DTB=y
 # CONFIG_ARM_ATAG_DTB_COMPAT is not set
-CONFIG_CMDLINE="console=ttyS0,115200 initrd=0x21100000,25165824 root=/dev/ram0 rw"
+CONFIG_CMDLINE="console=ttyS0,115200 mtdparts=atmel_nand:256K(bs)ro,512K(ub)ro,256K(env)ro,512K(env_r)ro,512K(dtb),6M(ker),16M(rfs),4M(cfg),-(store) root=/dev/mtdblock6 ro rootfstype=jffs2"
 CONFIG_CMDLINE_FROM_BOOTLOADER=y
 # CONFIG_CMDLINE_EXTEND is not set
 # CONFIG_CMDLINE_FORCE is not set
