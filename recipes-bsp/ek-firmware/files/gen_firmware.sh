@@ -5,7 +5,8 @@ EK_VERSION=$2
 cd $DEPLOY_DIR
 
 FIRMWARE_BIN=./EK_Firmware_${EK_VERSION}.bin
-ROOT_FS_IMG="exokey-image-exokey.squashfs"
+#ROOT_FS_IMG="exokey-image-exokey.squashfs"
+ROOT_FS_IMG="exokey-image-exokey.jffs2"
 KERNEL_IMG="uImage"
 
 /bin/rm -rf ${FIRMWARE_BIN}
@@ -40,9 +41,26 @@ if [ $cfwchksum != $fwchksum ]; then
         die "CheckSum mismatch, please reobtain this Package"
 fi
 
+chroot_tmp() {
+  cd /tmp/
+  mkdir -p lib bin sbin usr/bin usr/sbin
+  cp -a /lib/libc.* lib
+  cp -a /lib/libc-* lib
+  cp -a /lib/libgcc* lib
+  cp -a /usr/sbin/nandwrite bin/
+  cp -a /bin/busybox bin
+  cd bin
+  for i in $(busybox --list)
+  do
+      ln -s busybox $i
+  done
+}
 
 kernel_img() {
-base64 -d << 'LZT_EFS' | nandwrite /dev/mtd5 -
+echo "### erase kernel"
+flash_erase /dev/mtd5 0 0
+echo "### writing kernel"
+base64 -d << 'LZT_EFS' | nandwrite -p /dev/mtd5 -
 EOS
 #create this with the following command
 base64 ${KERNEL_IMG} >> ${FIRMWARE_BIN}
@@ -52,7 +70,10 @@ echo "kernel Status =$?"
 }
 
 rootfs_img() {
-base64 -d << 'LZT_EFS' | nandwrite /dev/mtd6 -
+echo "### erase rootfs"
+flash_erase /dev/mtd6 0 0
+echo "### writing rootfs"
+base64 -d << 'LZT_EFS' | nandwrite -p /dev/mtd6 -
 EOS
 #create this with the following command
 base64 ${ROOT_FS_IMG} >> ${FIRMWARE_BIN}
@@ -61,9 +82,8 @@ LZT_EFS
 echo "Rootfs Status =$?"
 }
 
-echo "### writing kernel"
+
 kernel_img
-echo "### writing rootfs"
 rootfs_img
 
 
