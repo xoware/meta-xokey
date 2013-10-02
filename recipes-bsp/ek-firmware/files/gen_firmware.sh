@@ -1,5 +1,10 @@
 #!/bin/sh
-
+#
+# This script writes the firmware binary to the flash MTD device
+#
+# BUG:  This script needs to be loaded in RAM, so it consumes a lot
+# SECURITY:  Loading a shell script, a mallicious user could load a mallicious script as a firmware image
+#
 DEPLOY_DIR=$1
 EK_VERSION=$2
 cd $DEPLOY_DIR
