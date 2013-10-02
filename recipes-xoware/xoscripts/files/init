@@ -1,0 +1,41 @@
+#!/bin/busybox sh
+
+
+rescue_shell() {
+    echo "Something went wrong. Dropping you to a shell."
+    busybox --install -s
+    exec /bin/sh
+}
+
+remote_rescue_shell() {
+    # Bring up network interface
+    ifconfig eth0 10.64.1.8 up
+
+    # telnetd requires devpts
+    mkdir -p /dev/pts
+    mount -t devpts none /dev/pts
+
+    # Start the telnet server
+    telnetd
+
+    # Continue with the local rescue shell
+    rescue_shell
+}
+
+# Mount the /proc and /sys filesystems.
+mount -t proc none /proc
+mount -t sysfs none /sys
+echo /sbin/mdev > /proc/sys/kernel/hotplug
+mdev -s
+
+
+#mount -o ro /dev/md1 /mnt/root || rescue_shell
+
+remote_rescue_shell
+
+# Clean up.
+umount /proc
+umount /sys
+
+# Boot the real thing.
+exec switch_root /mnt/root /sbin/init

@@ -45,6 +45,7 @@ IMAGE_INSTALL = "packagegroup-core-boot ${ROOTFS_PKGMANAGE_BOOTSTRAP} ${CORE_IMA
 LICENSE_FLAGS_WHITELIST += "commercial"
 RDEPENDS_kernel-base = ""
 
+INITRAMFS_FSTYPES = "cpio.gz"
 
 
 

@@ -54,6 +54,8 @@ LINUX_VERSION_EXTENSION ?= "-custom"
 KBRANCH ?= "linux-3.11.y"
 META = "meta"
 
+INITRAMFS_IMAGE = "exokey-initramfs"
+
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
 SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git;branch=${KBRANCH}"
@@ -84,4 +86,3 @@ EXTRA_OEMAKE = "${PARALLEL_MAKE}"
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
 COMPATIBLE_MACHINE = "(sama5d3xek|at91sam9x5ek|exokey)"
-
