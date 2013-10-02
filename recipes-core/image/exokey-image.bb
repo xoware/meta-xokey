@@ -52,4 +52,16 @@ do_rootfs_append () {
 	EK_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/EK_VERSION`
 	echo "EK_VERSION = $EK_VERSION"
 	gen_firmware.sh ${DEPLOY_DIR_IMAGE} ${EK_VERSION}
+	ln -sf EK_Firmware_${EK_VERSION}.bin ${DEPLOY_DIR_IMAGE}/EK_Firmware.bin
+	
+
+	echo \[ubifs\] > ubinize.cfg 
+	echo mode=ubi >> ubinize.cfg
+	echo image=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs >> ubinize.cfg 
+	echo vol_id=0 >> ubinize.cfg 
+	echo vol_type=dynamic >> ubinize.cfg 
+	echo vol_name=rootfs >> ubinize.cfg 
+	echo vol_flags=autoresize >> ubinize.cfg
+	ubinize -o ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.ubi ${UBINIZE_ARGS} ubinize.cfg
+	ln -sf {IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
 }
