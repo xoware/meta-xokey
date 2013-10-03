@@ -48,7 +48,6 @@ RDEPENDS_kernel-base = ""
 INITRAMFS_FSTYPES = "cpio.gz"
 
 
-
 do_rootfs_append () {
 	EK_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/EK_VERSION`
 	echo "EK_VERSION = $EK_VERSION"
@@ -62,7 +61,7 @@ do_rootfs_append () {
 	echo vol_id=0 >> ubinize.cfg 
 	echo vol_type=dynamic >> ubinize.cfg 
 	echo vol_name=rootfs >> ubinize.cfg 
-	echo vol_flags=autoresize >> ubinize.cfg
+#	echo vol_flags=autoresize >> ubinize.cfg
 	ubinize -o ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.ubi ${UBINIZE_ARGS} ubinize.cfg
-	ln -sf {IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
+	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
 }
