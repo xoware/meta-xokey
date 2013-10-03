@@ -1,9 +1,40 @@
 #!/bin/busybox sh
+#
+#  XoWare Init for initramfs
+#  Goals here:
+#  1.   Detect if update image is available, and if so, apply it before mounting flash filesystems
+#  2.   mount root fs  on flash or nfs (development)
+#  3.   Continue bootprocess calling switch_root 
 
+
+# msg functions arguments
+# $1 string
+# $2 hide flag
+
+good_msg() {	
+	msg_string=$1
+	msg_string="${msg_string:-...}"
+	[ "$2" != 1 ] && echo -e "${GOOD}>>${NORMAL}${BOLD} ${msg_string} ${NORMAL}"
+}
+
+bad_msg() {
+	msg_string=$1
+	msg_string="${msg_string:-...}"
+	if [ "$2" != 1 ]
+	then
+		echo -e "${BAD}!!${NORMAL}${BOLD} ${msg_string} ${NORMAL}"
+	fi
+} 
+
+warn_msg() {
+	msg_string=$1
+	msg_string="${msg_string:-...}"
+	[ "$2" != 1 ] && echo -e "${WARN}**${NORMAL}${BOLD} ${msg_string} ${NORMAL}"
+}
 
 rescue_shell() {
-    echo "Something went wrong. Dropping you to a shell."
-    busybox --install -s
+    echo "Dropping you to a rescue shell."
+    /bin/busybox --install -s
     exec /bin/sh
 }
 
@@ -16,26 +47,122 @@ remote_rescue_shell() {
     mount -t devpts none /dev/pts
 
     # Start the telnet server
-    telnetd
+    telnetd -l /bin/sh
 
     # Continue with the local rescue shell
     rescue_shell
 }
 
+mount_real_root () {
+	echo "Start real root ${REAL_ROOT} "
+	cat /proc/mounts
+	# Clean up.
+	umount /proc
+	umount /sys
+
+	# Boot the real thing.
+	exec switch_root ${REAL_ROOT} /sbin/init
+
+}
+
+check_nfsmount() {
+
+	if grep 'nfsroot=' /proc/cmdline > /dev/null 2>&1; then
+		echo "NFS specified in cmd line"
+	else
+		return
+	fi
+
+	# Obtain NFSIP	
+	OPTIONS=`cat /proc/cmdline"`
+	for OPTION in $OPTIONS
+	do
+		if [ `echo $OPTION | sed -e "s/=/ /g" | cut -d " " -f 1` = 'nfsroot' ]
+		then
+			echo "NFSOPT = ${OPTION}"
+			NFSIP=`echo $OPTION | sed -e 's/:/=/' |cut -d= -f2`
+			NFSPATH=`echo $OPTION | sed -e 's/:/=/' |cut -d= -f3`
+		fi 
+	done
+
+	# Setup NFSROOT
+	if [ "${NFSIP}" != '' ] && [ "$NFSPATH" != '' ]
+	then
+		NFSROOT="${NFSIP}:${NFSPATH}"
+	else
+		bad_msg "Please check your paramaters nfsroot=<...> parameter."
+	fi
+
+	if [ "${NFSROOT}" != '' ]
+	then
+
+		NFSOPTIONS="ro,nfsvers=2,nolock"
+
+		good_msg "Attempting to mount NFS root on ${NFSROOT} with options ${NFSOPTIONS}"
+		mkdir -p /mnt/nfs
+		mount -t nfs -o ${NFSOPTIONS} ${NFSROOT} /mnt/nfs
+		if [ "$?" = '0' ]
+		then
+			REAL_ROOT="/mnt/nfs"
+			mount_real_root
+		else
+			bad_msg "NFS Mounting failed. Is the path correct ?"
+			remote_rescue_shell
+		fi
+	fi
+	
+}
+check_fw_upgrade () {
+	if grep '"new_rootfs"' /proc/mtd > /dev/null 2>&1; then
+		echo "new_rootfs found"
+		ubirmvol /dev/ubi0  -N old_rootfs > /dev/null 2>&1
+		ubirename /dev/ubi0 rootfs old_rootfs new_rootfs rootfs
+		ubirmvol /dev/ubi0  -N old_rootfs > /dev/null 2>&1
+		
+		ROOTFS_MTD=`grep '"new_rootfs"' /proc/mtd |cut -d ':' -f1 |sed -e 's/mtd//'`
+		mount -t squashfs /dev/mtdblock${ROOTFS_MTD}  /mnt/root/
+		if [ "$?" = '0' ]
+		then
+			REAL_ROOT="/mnt/root"
+			mount_real_root
+		fi
+	fi
+}
+
+mount_rootfs_squashfs_ubi () {
+	echo "checking rootfs"
+	if grep '"rootfs"' /proc/mtd > /dev/null 2>&1; then
+		echo "rootfs found"
+		ROOTFS_MTD=`grep '"rootfs"' /proc/mtd |cut -d ':' -f1 |sed -e 's/mtd//'`
+		mount -t squashfs /dev/mtdblock${ROOTFS_MTD}  /mnt/root/
+		if [ "$?" = '0' ]
+		then
+			REAL_ROOT="/mnt/root"
+			mount_real_root
+		else 
+			bad_msg "Flash Mounting failed."
+			remote_rescue_shell
+		fi
+		
+	fi
+}
+
+## Main Startup
 # Mount the /proc and /sys filesystems.
-mount -t proc none /proc
-mount -t sysfs none /sys
+mkdir -p /proc /sys /mnt/new /mnt/root
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
 echo /sbin/mdev > /proc/sys/kernel/hotplug
 mdev -s
 
 
 #mount -o ro /dev/md1 /mnt/root || rescue_shell
 
+check_fw_upgrade
+check_nfsmount
+mount_rootfs_squashfs_ubi
+
+echo "REAL_ROOT=${REAL_ROOT}"
+
 remote_rescue_shell
 
-# Clean up.
-umount /proc
-umount /sys
-
-# Boot the real thing.
-exec switch_root /mnt/root /sbin/init

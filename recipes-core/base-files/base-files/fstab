@@ -1,8 +1,11 @@
 #rootfs               /                  auto       defaults              1  1
 proc                 /proc              proc       defaults              0  0
 sysfs                /sys               sysfs      defaults              0  0
+devtmpfs             /dev/              devtmpfs   defaults              0  0
 usbdevfs             /proc/bus/usb      usbdevfs   noauto                0  0
-/dev/mtdblock7       /xokcfg            jffs2      defaults              0  0
-/dev/mtdblock8       /storage           jffs2      defaults              0  0
+/dev/mtdblock6       /xokcfg            jffs2      defaults,noatime,rw   0  0
+#/dev/mtdblock8       /storage           jffs2      defaults              0  0
+#ubi0:config           /xokcfg            ubifs      defaults,noatime,rw              0  0
+ubi0:storage          /storage           ubifs      defaults,noatime,rw              0  0
 tmpfs                /tmp               tmpfs      size=16M,mode=0777    0  0
 tmpfs                /var/volatile      tmpfs      size=512K,mode=0777    0  0

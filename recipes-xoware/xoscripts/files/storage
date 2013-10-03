@@ -7,27 +7,14 @@ mount |grep storage && {
   echo "storage mounted"
   exit;
 }
+echo "storage not mounted"
+#flash_erase -j /dev/mtd8 0 0
+#mount -t jffs2 /dev/mtdblock8  /storage
 
-flash_erase -j /dev/mtd8 0 0
-mount -t jffs2 /dev/mtdblock8  /storage
-
-
-exit
-#below stuff obsolete 
-
-#TODO possibly remove this attach by putting it in kernel command line
-# ubiattach /dev/ubi_ctrl -m 8
-# mount -t ubifs ubi0:store  /storage
-
-# if [ $? = 0 ]; then
-#   echo "Storage mounted"
-#   exit
-# fi;
-# 
-# echo "initalize storage"
-# 
-# flash_erase /dev/mtd8 0 0
-# ubiattach /dev/ubi_ctrl -m 8
-# ubimkvol /dev/ubi0 -N store -m
-# mount -t ubifs ubi0:store  /storage
-
+ubimkvol /dev/ubi0 -N storage -s 64MiB
+VOL_NUM=`ubinfo /dev/ubi0 -N storage |grep Volume |sed -e 's/ /:/g' |sed -e 's/::/:/g' | sed -e 's/::/:/g'  |cut -d: -f3`
+if [ "${NFSROOT}" != '' ]
+then
+      mkfs.ubifs /dev/ubi0_${VOL_NUM}
+      mount -t ubifs ubi0:storage  /storage
+fi
