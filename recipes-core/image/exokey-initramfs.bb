@@ -14,7 +14,7 @@ ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
 
 LINUX_VERSION_EXTENSION = "-xoware"
 
-IMAGE_INSTALL = "busybox xoscripts-initramfs"
+IMAGE_INSTALL = "busybox xoscripts-initramfs mtd-utils mtd-utils-ubifs"
 
 
 LICENSE_FLAGS_WHITELIST += "commercial"
@@ -24,11 +24,6 @@ RDEPENDS_kernel-base = ""
 KERNEL_IMAGETYPE = "uImage"
 IMAGE_FSTYPES = "cpio cpio.gz"
 
-#SRC_URI = "file://init "
-#
-#do_install_append() {
-#	install -m 755 ${WORKDIR}/init ${IMAGE_ROOTFS}/
-#}
 
 do_rootfs_append () {
 	
