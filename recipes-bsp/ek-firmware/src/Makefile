@@ -13,5 +13,5 @@ xomkimage: $(objs) xomkimage.c
 
 .PHONY: clean
 clean:
-	rm -f $(objs) mkimage
+	rm -f $(objs) xomkimage
 	

@@ -3,10 +3,24 @@ SECTION = "bsp"
 LICENSE = "CLOSED"
 
 
-inherit native
+inherit native externalsrc
 SRC_URI = "file://gen_firmware.sh "
 
+S = "${THISDIR}/src"
+
+do_compile () {
+	cd ${THISDIR}/src
+	oe_runmake
+}
+
+
 do_install () {
-	install -m 755 ${WORKDIR}/gen_firmware.sh ${STAGING_BINDIR_NATIVE}
+	echo THISDIR = ${THISDIR}
+	
+	#gen firmware script is image for programming in uBoot
+	install -m 755 ${THISDIR}/files/gen_firmware.sh ${STAGING_BINDIR_NATIVE}
+	
+	#xomkimage is firmware update to be run from linux UI
+	install -m 755 ${THISDIR}/src/xomkimage ${STAGING_BINDIR_NATIVE}
 
 }
