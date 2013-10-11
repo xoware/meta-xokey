@@ -66,6 +66,6 @@ do_rootfs_append () {
 	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
 	
 	#generate firmware image for update in linux UI
-	xomkimage ${DEPLOY_DIR_IMAGE}/uImage:mtd:6:0:kernel  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs:ubivol:0:0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/firmware_${EK_VERSION}.img
+	xomkimage ${DEPLOY_DIR_IMAGE}/uImage:mtd:5:0:kernel  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs:ubivol:0:0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/firmware_${EK_VERSION}.img
 	ln -sf ${DEPLOY_DIR_IMAGE}/firmware_${EK_VERSION}.img ${DEPLOY_DIR_IMAGE}/firmware.img
 }
