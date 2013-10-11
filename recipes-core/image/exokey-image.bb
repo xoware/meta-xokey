@@ -14,7 +14,7 @@ IMAGE_ROOTFS_SIZE = "8192"
 ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
 
 LINUX_VERSION_EXTENSION = "-xoware"
-
+PREFERRED_VERSION_linux-yocto = "3.6.%"
 
 EXOKEY_PKGS = "xokd"
 EXOKEY_PKGS += "xoscripts"
@@ -64,4 +64,8 @@ do_rootfs_append () {
 #	echo vol_flags=autoresize >> ubinize.cfg
 	ubinize -o ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.ubi ${UBINIZE_ARGS} ubinize.cfg
 	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
+	
+	#generate firmware image for update in linux UI
+	xomkimage ${DEPLOY_DIR_IMAGE}/uImage:mtd:6:0:kernel  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs:ubivol:0:0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/firmware_${EK_VERSION}.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/firmware_${EK_VERSION}.img ${DEPLOY_DIR_IMAGE}/firmware.img
 }
