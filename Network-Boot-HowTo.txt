@@ -1,0 +1,26 @@
+This is a quick howto develop with ExoKey on network.
+
+1.  Follow README  to build images and tree
+
+2.  Setup Dev workstation with TFTP server.  eg:  atftpd --daemon /tftproot
+
+4. Symlink the rootfs dir to /rootfs  we need a shorter path as there is a limit how long the uboot/linux command line can be. 
+ln -s  /home/karl/Work/yocto/poky-dylan-9.0.1/build/tmp/work/exokey-poky-linux-gnueabi/exokey-image/1.0-r0/rootfs
+
+3.  Setup Dev workstation with NFS server and add exports
+$ cat /etc/exports 
+
+# /etc/exports: NFS file systems being exported.  See exports(5).
+/home/karl/Work/  10.0.0.0/8(ro,no_subtree_check)
+/rootfs/ 10.0.0.0/8(ro,no_subtree_check)
+
+5. Create symlinks to dtb, and kernel
+cd /tftproot
+ln -s /home/karl/Work/yocto/poky-dylan-9.0.1/build/tmp/deploy/images/uImage
+ln -s /home/karl/Work/yocto/poky-dylan-9.0.1/build/tmp/deploy/images/uImage-sama5d31ek.dtb
+
+
+6.  confgure uboot, see linux/Documentation/ {kernel-parameters.txt, filesystems/nfs/nfsroot.txt} for info:
+
+setenv bootcmd "tftp 0x21000000 sama5d31ek.dtb;tftp 0x22000000 uImage;bootm 0x22000000 - 0x21000000"
+setevn bootargs "console=ttyS0,115200 mtdparts=atmel_nand:256K(bs)ro,512K(ub)ro,256K(env)ro,512K(env_r)ro,512K(dtb),6M(ker),8M(cfg),-(store) root=/dev/ram0 ubi.mtd=7 root=/dev/nfs nfsroot=10.64.1.2:/rootfs ip=10.64.1.8:10.64.1.2::255.0.0.0: debug"
