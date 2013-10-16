@@ -49,3 +49,15 @@ PACKAGE_CLASSES ?= "package_ipk package_tar"
 8. Build exokey image
 bitbake -v exokey-image
 
+  This will build and produce output in build/tmp/deploy/images:
+  A) firmware image in build/tmp/deploy/images/firmware*.img   This is the image used in the UI
+  This currently contains the Kernel and UBI squashfs/rootfs  volume.   At a later date we may decide to include  uboot or DTB files in this firmware image
+
+  B) uImage Kernel image including initramfs   This can be programmed in uboot console with nand write, or linux console with nandwrite command
+
+  C) *.DTB   Device tree binary.  Used by linux kernel to detect hardware.   Need only be programmed once at factory unless we change something.
+  DTB can be programmed via U-Boot directly to NAND or on linux console with nandwrite
+  Currently this is on the mtd4 partion at 0x180000
+
+  D) rootfs.squashfs.ubi :  this is the rootfs squashfs volume inside a UBI image.  This can be programmed via U-Boot directly to NAND
+
