@@ -7,3 +7,5 @@ env
 
 
 iptables -t nat -I POSTROUTING -o $dev -j MASQUERADE
+
+exit 0
