@@ -23,4 +23,4 @@ ln -s /home/karl/Work/yocto/poky-dylan-9.0.1/build/tmp/deploy/images/uImage-sama
 6.  confgure uboot, see linux/Documentation/ {kernel-parameters.txt, filesystems/nfs/nfsroot.txt} for info:
 
 setenv bootcmd "tftp 0x21000000 sama5d31ek.dtb;tftp 0x22000000 uImage;bootm 0x22000000 - 0x21000000"
-setevn bootargs "console=ttyS0,115200 mtdparts=atmel_nand:256K(bs)ro,512K(ub)ro,256K(env)ro,512K(env_r)ro,512K(dtb),6M(ker),8M(cfg),-(store) root=/dev/ram0 ubi.mtd=7 root=/dev/nfs nfsroot=10.64.1.2:/rootfs ip=10.64.1.8:10.64.1.2::255.0.0.0: debug"
+setenv bootargs "console=ttyS0,115200 mtdparts=atmel_nand:256K(bs)ro,512K(ub)ro,256K(env)ro,512K(env_r)ro,512K(dtb),6M(ker),8M(cfg),-(store) root=/dev/ram0 ubi.mtd=7 root=/dev/nfs nfsroot=10.64.1.2:/rootfs ip=10.64.1.8:10.64.1.2::255.0.0.0: debug"
