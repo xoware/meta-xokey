@@ -35,6 +35,8 @@ EXOKEY_PKGS += "strace"
 EXOKEY_PKGS += "socat"
 EXOKEY_PKGS += "cryptodev-tests"
 
+EXOKEY_PKGS += "libnl-route libnl-genl"
+
 
 #install all kernel modules
 EXOKEY_PKGS += "kernel-modules"
