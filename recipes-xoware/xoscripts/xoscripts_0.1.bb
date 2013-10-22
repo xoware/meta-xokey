@@ -12,6 +12,7 @@ SRC_URI =  "file://profile \
             file://rcS \
             file://openssl.cnf \
             file://S80xokd \
+            file://coredumps \
             file://check_ssl.sh"
 
 PACKAGES = "${PN}"
@@ -35,6 +36,7 @@ do_install () {
 	install -m 0444 ${WORKDIR}/.keep ${D}/storage/
 	install -m 0755 ${WORKDIR}/firstboot ${D}/etc/init.d/S10firstboot
 	install -m 0755 ${WORKDIR}/storage ${D}/etc/init.d/S20storage
+	install -m 0755 ${WORKDIR}/coredumps ${D}/etc/init.d/S25coredumps
 	install -m 0755 ${WORKDIR}/rcS ${D}${sysconfdir}/init.d/rcS
 	install -m 0755 ${WORKDIR}/S80xokd ${D}${sysconfdir}/init.d/
 	install -m 0755 ${WORKDIR}/openvpn.up.sh ${D}${sysconfdir}/openvpn/
