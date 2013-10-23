@@ -13,7 +13,7 @@ echo "storage not mounted"
 
 ubimkvol /dev/ubi0 -N storage -s 64MiB
 VOL_NUM=`ubinfo /dev/ubi0 -N storage |grep Volume |sed -e 's/ /:/g' |sed -e 's/::/:/g' | sed -e 's/::/:/g'  |cut -d: -f3`
-if [ "${NFSROOT}" != '' ]
+if [ "${VOL_NUM}" != '' ]
 then
       mkfs.ubifs /dev/ubi0_${VOL_NUM}
       mount -t ubifs ubi0:storage  /storage
