@@ -16,7 +16,7 @@ SRC_URI[sha256sum] = "20bda3f9debb9a52db262aecddfa4e814050a9404a9106136b7e3b6f7e
 CFLAGS += "-fno-inline"
 
 # I want openvpn to be able to read password from file (hrw)
-EXTRA_OECONF += "--enable-password-save --disable-plugin-auth-pam ROUTE=/sbin/route IFCONFIG=/sbin/ifconfig"
+EXTRA_OECONF += "--enable-password-save --disable-plugin-auth-pam ROUTE=/sbin/route IFCONFIG=/sbin/ifconfig --enable-socks"
 
 do_configure_append() {
     #On my system the openvpn configure is deteting the path of the host ifconfig, not the target..  Manually fix it
