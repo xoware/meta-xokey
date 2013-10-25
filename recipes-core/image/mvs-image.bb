@@ -16,32 +16,32 @@ ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
 LINUX_VERSION_EXTENSION = "-xoware"
 PREFERRED_VERSION_linux-yocto = "3.6.%"
 
-EXOKEY_PKGS = "xokd"
-EXOKEY_PKGS += "xoscripts"
-EXOKEY_PKGS += "mtd-utils"
-EXOKEY_PKGS += "mtd-utils-ubifs"
-EXOKEY_PKGS += "mtd-utils-jffs2"
-EXOKEY_PKGS += "mtd-utils-misc"
-EXOKEY_PKGS += "openssl openssl-engines"
-EXOKEY_PKGS += "openvpn"
-EXOKEY_PKGS += "iptables"
-EXOKEY_PKGS += "cryptodev"
-EXOKEY_PKGS += "af-alg-engine"
+MVS_PKGS = "xokd"
+MVS_PKGS += "xoscripts"
+MVS_PKGS += "mtd-utils"
+MVS_PKGS += "mtd-utils-ubifs"
+MVS_PKGS += "mtd-utils-jffs2"
+MVS_PKGS += "mtd-utils-misc"
+MVS_PKGS += "openssl openssl-engines"
+MVS_PKGS += "openvpn"
+MVS_PKGS += "iptables"
+MVS_PKGS += "cryptodev"
+MVS_PKGS += "af-alg-engine"
 
 
 #Tools for now for debug/testing, remove for production
-EXOKEY_PKGS += "tcpdump"
-EXOKEY_PKGS += "strace"
-EXOKEY_PKGS += "socat"
-EXOKEY_PKGS += "cryptodev-tests"
+MVS_PKGS += "tcpdump"
+MVS_PKGS += "strace"
+MVS_PKGS += "socat"
+MVS_PKGS += "cryptodev-tests"
 
-EXOKEY_PKGS += "libnl-route libnl-genl"
+MVS_PKGS += "libnl-route libnl-genl"
 
 
 #install all kernel modules
-EXOKEY_PKGS += "kernel-modules"
+MVS_PKGS += "kernel-modules"
 
-IMAGE_INSTALL = "packagegroup-core-boot ${ROOTFS_PKGMANAGE_BOOTSTRAP} ${CORE_IMAGE_EXTRA_INSTALL}  ${EXOKEY_PKGS}"
+IMAGE_INSTALL = "packagegroup-core-boot ${ROOTFS_PKGMANAGE_BOOTSTRAP} ${CORE_IMAGE_EXTRA_INSTALL}  ${MVS_PKGS}"
 
 
 LICENSE_FLAGS_WHITELIST += "commercial"

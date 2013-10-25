@@ -47,32 +47,31 @@ inherit kernel
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://COPYING;md5=d7810fab7487fb0aad327b76f1be7cd7"
 DEFAULT_PREFERENCE = "-1"
-# Note: 3.10.X series is a long term kernel (karl)
-# https://www.kernel.org/category/releases.html
-LINUX_VERSION = "3.11.1"
+
+
+LINUX_VERSION = "2.6.35.12"
 LINUX_VERSION_EXTENSION ?= "-custom"
-KBRANCH ?= "linux-3.11.y"
+KBRANCH = "master"
 META = "meta"
 
-INITRAMFS_IMAGE = "exokey-initramfs"
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
-SRC_URI = "git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git;branch=${KBRANCH}"
+SRC_URI = "git://github.com/xoware/linux-2.6.35.12.git;branch=${KBRANCH};branch=master;protocol=ssh;user=git"
 
 
 SRC_URI += "file://defconfig"
 
+KERNEL_EXTRA_ARGS="PATCH_UPNAS=n"
 
-
-
+UBOOT_ENTRYPOINT="0x2000000"
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
 # tag: v3.4 76e10d158efb6d4516018846f60c2ab5501900bc
 #3.10.11
-#SRCREV="85cdabba08d484bdcc4b25f0bbc23ac60c75aa5b"
-SRCREV="v3.11.1"
+SRCREV="master"
+#SRCREV="2.6.35.12"
 
 
 #PV = "${LINUX_VERSION}+${SRCREV}"
@@ -85,4 +84,26 @@ EXTRA_OEMAKE = "${PARALLEL_MAKE}"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
-COMPATIBLE_MACHINE = "(sama5d3xek|at91sam9x5ek|exokey)"
+COMPATIBLE_MACHINE = "(xo1-mvs)"
+
+
+
+kernel_do_configure() {
+	# fixes extra + in /lib/modules/2.6.37+
+	# $ scripts/setlocalversion . => +
+	# $ make kernelversion => 2.6.37
+	# $ make kernelrelease => 2.6.37+
+	touch ${B}/.scmversion ${S}/.scmversion
+
+	cp ${WORKDIR}/defconfig ${B}/.config
+
+	if [ ! -z "${INITRAMFS_IMAGE}" ]; then
+		for img in cpio.gz cpio.lzo cpio.lzma cpio.xz; do
+		if [ -e "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.$img" ]; then
+			cp "${DEPLOY_DIR_IMAGE}/${INITRAMFS_IMAGE}-${MACHINE}.$img" initramfs.$img
+		fi
+		done
+      fi
+}
+
+

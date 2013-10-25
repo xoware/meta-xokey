@@ -6,21 +6,18 @@ Build procedure:
 1. Clone yocto/poky git repository
 git clone git://git.yoctoproject.org/poky
 
-2. Checkout dylan-9.0.1 tag
+2. Checkout dylan-9.0.2 tag
 cd poky
-git checkout dylan-9.0.1 -b my_branch
+git checkout dylan-9.0.2 -b mvs_branch
 
-3. Clone meta-atmel layer
-git clone http://github.com/linux4sam/meta-atmel
+3.  Clone meta-mvs layer
+git clone git@github.com:xoware/meta-mvs.git
 
-4.  Clone meta-exokey layer
-git clone git@github.com:xoware/meta-xokey.git
-
-5. Initialize build directory
-source oe-init-build-env
+4. Initialize build directory
+source oe-init-build-env build_mvs
 
 
-6. Add meta-atmel, meta-exokey layers to bblayer configuration file
+5. Add meta-mvs layer path to bblayer configuration file
 vim conf/bblayers.conf:
 
 # LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
@@ -39,15 +36,16 @@ BBLAYERS ?= " \
   "
 7. Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
 vim conf/local.conf:
+
 [...]
-MACHINE ??= "exokey"
+MACHINE ??= "xo1-mvs"
 [...]
 DL_DIR ?= "your_download_directory_path"
 [...]
 PACKAGE_CLASSES ?= "package_ipk package_tar"
 
 8. Build exokey image
-bitbake -v exokey-image
+bitbake -v mvs-image
 
   This will build and produce output in build/tmp/deploy/images:
   A) firmware image in build/tmp/deploy/images/firmware*.img   This is the image used in the UI
