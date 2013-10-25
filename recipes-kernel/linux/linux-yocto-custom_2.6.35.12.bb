@@ -61,10 +61,13 @@ SRC_URI = "git://github.com/xoware/linux-2.6.35.12.git;branch=${KBRANCH};branch=
 
 
 SRC_URI += "file://defconfig"
+SRC_URI += "file://extra-cflags-override.patch"
 
-KERNEL_EXTRA_ARGS="PATCH_UPNAS=n"
+KERNEL_EXTRA_ARGS="PATCH_UPNAS=n LOADADDR=0x2000000  V=1 KCFLAGS=-mno-unaligned-access"
+#  EXTRA_CFLAGS=-mno-unaligned-access
 
-UBOOT_ENTRYPOINT="0x2000000"
+UBOOT_ENTRYPOINT="2000000"
+
 
 # Override SRCREV to point to a different commit in a bbappend file to
 # build a different release of the Linux kernel.
@@ -74,7 +77,9 @@ SRCREV="master"
 #SRCREV="2.6.35.12"
 
 
+
 #PV = "${LINUX_VERSION}+${SRCREV}"
+
 PV = "${LINUX_VERSION}"
 
 PR = "r1"
