@@ -1,0 +1,11 @@
+--- bak	2010-12-23 16:40:23.482675177 +0800
++++ config.h	2010-12-23 16:40:36.482175342 +0800
+@@ -191,7 +191,7 @@
+ #define INET6 
+ 
+ /* Use advanced IPv6 API */
+-/* #undef INET6_ADVAPI */
++#define INET6_ADVAPI 1
+ 
+ /* Name of package */
+ #define PACKAGE "ipsec-tools"

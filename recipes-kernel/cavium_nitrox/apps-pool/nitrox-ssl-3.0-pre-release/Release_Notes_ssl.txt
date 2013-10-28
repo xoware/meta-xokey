@@ -1,0 +1,177 @@
+Cavium Reference Software, NITROX-SSL-SDK-Pre-Release-3.0
+File Release_Notes_ssl.txt
+Copyright Cavium Networks
+
+
+
+ * This product includes software developed by the OpenSSL Project
+ *    for use in the OpenSSL Toolkit (http://www.openssl.org/)
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE OpenSSL PROJECT ``AS IS'' AND ANY
+ * EXPRESSED OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE OpenSSL PROJECT OR
+ * ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * ====================================================================
+ *
+ * This product includes cryptographic software written by Eric Young
+ * (eay@cryptsoft.com). This product includes software written by Tim
+ * Hudson (tjh@cryptsoft.com).
+
+
+
+
+ 1. What is in this release?
+ ==========================
+ This SDK contains source code for the following:
+   - Cavium modified version of openssl-0.9.8j stack for Nitrox offload.
+   - TurboSSL Thin applications.
+      * TurboSSL Blocking/NonBlocking test software example.
+
+ See below for version-specific details or changes to this SDK, 
+ and a list of currently released patches (if any).
+
+
+
+
+ 2. Dependencies
+ ================
+ This release requires the following Nitrox SDK.
+   - NITROX-Driver-Linux-SDK-Pre-release-3.0 or higher
+
+
+
+
+ 3. Directory Structure
+ ======================
+ The following directories will be created where this software is installed:
+
+ .
+ |-- TurboSSL-0.9.8j  (Cavium modified version of openssl-0.9.8j for 
+ |                     Nitrox offload)
+ |
+ `-- thin_apps        (Contains the sample SSL Server/Client test
+                       applications. Can be used in both Blocking and
+                       Nonblocking mode of operations)
+
+
+
+
+ 4. Supported Features
+ =====================
+ TurboSSL Features:
+ +--------------------------+---------------------------------------------+
+ |      Name                |       Supported                             |
+ +--------------------------+---------------------------------------------+
+ | Protocol versions        |   ssl3 and tls1                             |
+ +------------------------------------------------------------------------+
+ | Server mode              |   Y                                         |
+ +--------------------------+---------------------------------------------+
+ | Client mode              |   Y                                         |
+ +------------------------------------------------------------------------+
+ | Cipher suite             |  AES128-SHA                                 |
+ |                          |  AES256-SHA                                 |
+ |                          |  RC4-MD5                                    |
+ |                          |  RC4-SHA                                    |
+ |                          |  DES-CBC-SHA                                |
+ |                          |  DES-CBC3-SHA                               |
+ |                          |  EXP-RC4-MD5                                |
+ |                          |  EXP-DES-CBC-SHA                            |
+ +------------------------------------------------------------------------+
+ | Offloaded Crypto         |  RC4                                        |
+ |                          |  DES/DES3                                   |
+ +------------------------------------------------------------------------+
+ | Offloaded Digest         |  MD5                                        |
+ |                          |  SHA1                                       |
+ +------------------------------------------------------------------------+
+ | Server certificates size |  Upto 2K (For Nitrox-I / Nitrox-Lite)       |
+ |                          |  Upto 4K (For Nitrox-Px)                    |
+ +------------------------------------------------------------------------+
+ | Client Authentication    |  Y                                          |
+ +------------------------------------------------------------------------+
+ | Session Resumption       |  Y                                          |
+ +------------------------------------------------------------------------+
+ | Renegotiation            |  Y                                          |
+ +------------------------------------------------------------------------+
+ | TLS Ticket Option        |  N                                          |
+ +------------------------------------------------------------------------+
+
+
+
+
+ 5. Known Issues
+ ================
+  - TLS Session Ticket option is not supported by TurboSSL.
+
+
+
+
+ 6. Change History
+ ================== 
+ NITROX-SSL-SDK-Pre-Release-3.0
+ ------------------------------
+    - TurboSSL-0.9.8j is separated from NITROX-SSL-Linux-SDK-2.0 release.
+      This release contains only TurboSSL-0.9.8j and corresponding SSL Thin
+      Applications.
+    - TurboSSL is cleaned up for NPLUS support. NPLUS flag is removed from the
+      TurboSSL-0.9.8j. Now, TurboSSL can also work in NPLUS mode without 
+      having NPLUS flag.
+
+
+ NITROX-SSL-Linux-SDK-2.0
+ ------------------------
+    - Nitrox driver is ported to 2.6.27 kernel version.
+    - This release is based on openssl-0.9.8j open source.
+    - SSL Handshake and Record Processing offload to Nitrox are made optional 
+      in this release.
+      For more information, read cavium/software/apps/linux_ssl_install.txt.
+    - Nitrox-Px, now supports IRQ-COALESCING.
+    - COUNTERS support added for all family of Nitrox Processors. This feature
+      gives SSL packet processing statistics by Nitrox hardware.
+      Nitrox processed SSL data statistics can be found at 
+      /proc/cavium/data_stats.
+    - All DMA lists (Pending/Direct/SG/Completion) moved to device structure.
+    - Single buffer pool manager for all Nitrox devices.
+    - Interrupt handler now checks for PCI error register as well.
+    - DUMP_FAILING_REQUESTS pre-processor define added to dump out all failing
+      requests.
+    - do_speed() API is added in the driver for benchmarking the Nitrox chip 
+      performance.
+    - SSL Speedtest performance benchmarking application added.
+    - Csp1GetAllResults() function now also supports 
+      CAVIUM_MULTICARD_API. This is used in measuring the Non-Blocking
+      perfomrnace of the Nitrox processors for multicard.
+    - Documentation of all SSL APIs are added in doxygen format. 
+    - CAVIUM_MULTICARD_API is enabled by default in Makefile.Linux. 
+      Enabling this flag works with 1x, 2x and 4x Nitrox cards.
+    - Nitrox-Px now supports 3K and 4K RSA certificates.
+    - This release is also tested with BigEndian architecture.
+    - POTS BIST test is not supported for Nitrox-Px in this release.
+
+
+Bug Fixes: 
+    - /proc/cavium entry bug fixes when dumping more than a single page.
+    - Session Resumption bug fix for Nitrox-Px 4x.  Now it uses same random 
+      number for all devices to set same secret key.
+    - [Bug 398] Nitrox-Px microcode bug fix for 3K and 4K RSA certificates.
+    - [Bug 481] In TurboSSL, master secret key buffer length is doubled for 
+      supporting 3K and 4K RSA certificates incase of Nitrox-Px.
+
+
+ NITROX-SSL-Linux-SDK-1.0
+ ------------------------
+    - Same driver software works for all nitrox parts as well as multi card. 
+    - No extra Cavium compilation flags are needed for TurboSSL 
+      configuration. 
+    - One time compilation of Nitrox driver and TurboSSL works for all 
+      nitrox parts.
+
+<EOF>
+

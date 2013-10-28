@@ -1,0 +1,59 @@
+#make -f star_auto.makefile KERNEL=$(KERNEL) TARGET_ROOTFS_DIR=$(TARGET_ROOTFS_DIR) CROSS_COMPILE=${CROSS_COMPILE}
+#
+# Initial parameters (don't change)
+#
+PWD=$(shell pwd)
+MYPATH=$(shell dirname ${PWD})
+MYNAME=$(shell basename ${PWD})
+
+
+# 
+# Received Parameter (don't change)
+#  
+#
+TARGET_ROOTFS_DIR?=$(shell pwd)/target
+KERNEL?=$(shell pwd)/../../kernels/linux
+CROSS_COMPILE?=arm-linux-
+
+#
+# Application specific application, change as needed
+#
+CC=${CROSS_COMPILE}gcc
+#PARAM= CC=${CC} DESTDIR=${TARGET_ROOTFS_DIR} CROSS_COMPILE=${CROSS_COMPILE}
+PARAM= INSTALL_PREFIX=${TARGET_ROOTFS_DIR}
+
+#
+# build: configure, then build
+#
+build: info
+	@echo action=$@
+	#using config would auto detect host environment
+	#sh config no-asm -fPIC compiler:${CROSS_COMPILE}gcc 
+	#./Configure no-asm -fPIC compiler:${CROSS_COMPILE}gcc 
+	#./Configure compiler:${CROSS_COMPILE}gcc 
+	./Configure compiler:${CROSS_COMPILE}gcc -O3
+	#./Configure no-asm -fPIC compiler:${CROSS_COMPILE}gcc -O3 -DOPENSSL_NO_DEPRECATED
+	#./Configure no-asm -fPIC compiler:${CROSS_COMPILE}gcc -O3
+	make ${PARAM}
+
+clean: info
+	@echo action=$@
+	#make clean ${PARAM}
+	if [ -f Makefile ] ; then make clean ${PARAM}||exit 1; fi
+
+install: info
+	@echo action=$@
+	mkdir ${TARGET_ROOTFS_DIR} -p
+	make install ${PARAM}
+	#cp _install/* ${TARGET_ROOTFS_DIR} -af
+
+info:
+	@echo ==================
+	@echo MYPATH=${MYPATH}
+	@echo MYNAME=${MYNAME}
+	@echo PWD=${PWD}
+	@echo TARGET_ROOTFS_DIR=${TARGET_ROOTFS_DIR}
+	@echo KERNEL=${KERNEL}
+	@echo ==================
+
+

@@ -1,0 +1,112 @@
+
+Table of Contents
+=================
+1. Pre-requisites 
+2. Building Kernel for ipsec.
+3. Building and Installing Cavium IPsec Tools
+4. Building and Installing Cavium IPSec Module
+
+
+
+ 1. Pre-requisites and Nitrox Driver Dependencies
+ ================================================
+    a) This document assumes that nitrox driver is already compiled and booted
+	in vega board according to the readme provided in the earlier package. 
+
+
+ 2. Building kernel for ipsec 
+ ==================================================
+        a)Go to kernel source
+           # cd cns3xxx_bsp/kernel/linux-2.6.31.1-cavm1/
+           # make menuconfig (select the following  options)
+                 Networking -->
+                      Networking support -->
+                           Networking options -->
+                               <*> PF_KEY sockets
+				               <M>   IP: AH transformation
+				               <M>   IP: ESP transformation
+				               <*>   IP: IPComp transformation
+				               <*>   IP: IPsec transport mode
+				               <*>   IP: IPsec tunnel mode      
+
+                               <*> The IPv6 protocol-->
+                                   <M> IPv6 AH Transformation
+                                   <M> IPv6 ESP Transformation
+		Security Options --->
+		      [*]   XFRM (IPSec) Networking
+							 Security Hooks                     
+                 Cryptographic API -->
+				      
+                      <*>   cbc support
+                      <*>   MD5 Digest Algorithm
+                      <*>   SHA1 Digest Algorithm
+                      <*>   DES and Triple DES EDE cipher algorithms
+                      <*>   AES cipher algorithms (i586)
+
+                 Kernel hacking -->
+                      [ ]   Detect Soft Lockups
+
+        (save and exit, .config will be created)
+        b) Compiling the kernel
+           # make bootpImage INITRD=../../images/ramdisk.img.gz
+           # make modules
+		   
+
+        c) Boot into vega board with the new kernel.
+
+
+ 3. Building and Installing Cavium IPsec Tools
+ ==============================================
+ 	a) Ipsec-tools-0.6.5 needs libcrypto.a library available with openssl.
+	Copy openssl-0.9.8i /cavium/software/apps/
+	       #cd openssl-0.9.8.i/
+		   #sh config no-asm -fPIC compiler:arm-linux-gcc 
+		   #make clean
+		   #make
+    Copy libcrypto.a into toolchain library.
+	       #cp libcrypto.a /opt/cnstools/arm-linux-2.6-mpcore-uclibc-le-2009.05/usr/lib/
+
+	b) Copy ipsec-tools-0.6.5 into cavium/software/apps/ directory.
+	   # cp -rf ipsec-tools-0.6.5 cavium/software/apps/
+           # cd cavium/software/apps/ipsec-tools-0.6.5/
+           # ./configure --host=arm-linux --with-openssl=../openssl-0.9.8i/
+	   Replace the CFLAGS in Makefile ./src/racoon/Makefile with following line.
+           CFLAGS = -g -O2  -Wall -W -Wno-unused -I../../openssl-0/9.8.i/
+	   # make clean
+           # make
+
+	Transfer the binaries setkey(./src/setkey/setkey) and
+	racoon(./src/racoon/racoon) into vega board using tftp.
+	
+
+ 4. Building and Installing Cavium IPSec Module
+ ==============================================
+        a) Copy the linux directory into cavium/software/apps/
+        # cd cavium/software/apps/linux/ipsec_module
+		Change the kernel Makefile path with the path of the arm linux Makefile in Makefile.
+        # make clean
+        # make
+        Trannsfer cavm_ipsec.ko module into vega board.
+
+5. Loading ipsec module on vega board
+=========================================
+		Load the nitrox driver.Transfer the setkey,racoon and cavm_ipsec.ko into vega board.
+		Insert the module cavm_ipsec.ko.
+		#insmod cavm_ipsec.ko
+
+        After executing the above steps, all IPSec processing is offloaded to
+        Nitrox.
+        Use setkey and racoon binaries to establish IPSec SA's and policies
+
+        b) Establishing manual connections
+           # ./setkey -f <filename>
+           <filename> contains arguments for the "setkey" command to create
+           an IPSec environment.
+        
+        c) Establishing ike connections
+           # ./setkey -f <filename>
+           # ./racoon -f <filename>
+
+
+
+

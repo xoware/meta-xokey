@@ -1,0 +1,57 @@
+#make -f star_auto.makefile KERNEL=$(KERNEL) TARGET_ROOTFS_DIR=$(TARGET_ROOTFS_DIR) CROSS_COMPILE=${CROSS_COMPILE}
+#
+# Initial parameters (don't change)
+#
+PWD=$(shell pwd)
+MYPATH=$(shell dirname ${PWD})
+MYNAME=$(shell basename ${PWD})
+
+
+# 
+# Received Parameter (don't change)
+#  
+#
+TARGET_ROOTFS_DIR?=$(shell pwd)/target
+KERNEL?=$(shell pwd)/../../kernels/linux
+CROSS_COMPILE?=arm-linux-
+
+#
+# Application specific application, change as needed
+#
+CC=${CROSS_COMPILE}gcc
+PARAM= INSTALL_PREFIX=${TARGET_ROOTFS_DIR} 
+
+
+#export APIDIR=/home/prj/vega_trunk/cpl/nitrox-driver-cns3xxx-3.0-pre-release/software/api;\
+#export CAVIUM_INCLUDEDIR=/home/prj/vega_trunk/cpl/nitrox-driver-cns3xxx-3.0-pre-release/software/include/;\
+
+#
+# build: configure, then build
+#
+build: info
+	@echo action=$@
+	-cp Makefile Makefile.1;cp Makefile.1 Makefile; rm Makefile.1;
+	make ${PARAM}
+
+clean: info
+	@echo action=$@
+	make clean ${PARAM}
+	#if [ -e Makefile ] ; then make distclean ${PARAM}||exit 1; fi
+
+install: info
+	@echo action=$@
+	mkdir ${TARGET_ROOTFS_DIR} -p
+	make install ${PARAM}
+	#cp _install/* ${TARGET_ROOTFS_DIR} -af
+
+info:
+	@echo ==================
+	@echo MYPATH=${MYPATH}
+	@echo MYNAME=${MYNAME}
+	@echo PWD=${PWD}
+	@echo TARGET_ROOTFS_DIR=${TARGET_ROOTFS_DIR}
+	@echo KERNEL=${KERNEL}
+	@echo ==================
+	if [ -f Makefile ] ; then touch Makefile ; fi;
+
+

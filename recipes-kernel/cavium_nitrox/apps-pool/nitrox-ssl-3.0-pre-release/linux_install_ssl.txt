@@ -1,0 +1,192 @@
+Release: NITROX-SSL-SDK-Pre-Release-3.0
+=======================================
+File linux_install_ssl.txt
+Copyright Cavium Networks
+
+
+Table of Contents
+=================
+1. Pre-requisites
+2. Building and Installing TurboSSL 
+3. Building Thin Server/Client Applications
+4. Building and Installing Apache Web Server
+
+
+
+
+1. Pre-requisites and Nitrox Driver Dependencies
+ ================================================
+    a) This document assumes that the Nitrox Board(s) is already inserted in the
+       host machine server.
+    b) This release is dependent on NITROX-Driver-Linux-SDK-Pre-Release-3.0.tgz.
+       It is highly recommended that NITROX-Driver-Linux-SDK-Pre-Release-3.0.tgz 
+       is extracted before proceeding further.
+    c) It is also highly recommended that
+       NITROX-SSL-SDK-Pre-release-3.0.tgz should be extracted under 
+	   cavium/software/apps directory.
+
+       Example :
+       i) Extract Nitrox Driver Release package
+          # cd /home/
+          # tar -zxvf NITROX-Driver-Linux-SDK-Pre-release-3.0.tgz
+          Above step will create 'cavium' directory.
+       ii) Extract Nitrox IPSec module release package.
+          # cd cavium/software/apps/
+          # tar -zxvf NITROX-SSL-SDK-Pre-Release-3.0.tgz
+
+    d) The Cavium driver for Nitrox is already built and installed (Refer
+       ../linux_driver_install.txt for building and installing the driver) on
+       the host machine server.
+    e) Make sure tar and Perl are already installed and available through the
+       commands 'tar' and 'perl'. They are needed for unpacking the tarballs and
+       for configuring the TurboSSL.
+    f) In the instructions below, replace <path-to-*> with the actual path for
+       the software installation.
+
+
+
+
+2. Building and Installing TurboSSL
+===================================
+  # cd /home/cavium/software/apps/TurboSSL-0.9.8j
+
+  Optional offload:
+  -----------------
+  TurboSSL-0.9.8j can be configured in offloading any of the following SSL
+  features.
+   * SSL Handshake offload only
+   * SSL Record Processing offload only
+   * Both SSL Handshake and Record Processing.
+
+   Use any of the following commands to configure TurboSSL for optional
+   offload to Nitrox.
+   
+   To Enable SSL Handshake offloads only.
+   # sh config no-threads no-asm cavium -DHANDSHAKE_OFFLOAD
+                             or
+
+   To Enable SSL Record Processing offloads only.
+   # sh config no-threads no-asm cavium -DRECORD_PROCESS_OFFLOAD
+                             or
+
+   To Enable both SSL Handshake and Record Processing offload
+   # sh config no-threads no-asm cavium 
+  
+
+  # make
+  # make install
+
+
+
+
+3. Building Thin Server/Client Applications
+===========================================
+  # cd /home/cavium/software/apps/thin_apps
+  # make 
+
+  Above command creates thin_server and thin_client executables.
+
+  Using Thinserver
+  ----------------
+  The different command line options to run thinserver are presented below.
+
+  # ./thin_server
+
+  ./thin_server : <certfile> <keyfile> <sock_nb_flag> <crypto_nb_flag>    \
+                  <RC4_flag> <nr_of_processes> <cache_on> <ClntAuth_flag>
+
+  where, 
+  <certfile>        : Path to RSA server certficate file
+  <Keyfile>         : Path to RSA server key certificate file
+  <sock_nb_flag>    : Socket Non-Blocking flag (1/0)
+  <crypto_nb_flag>  : Crypto Non-Blocking flag (1/0)
+  <RC4_flag>        : RC4 flag (1/0). If this is enabled thinserver supports 
+                      only RC4 ciphers.
+  <nr_of_processes> : Number of thinserver child processes to create.
+  <cache_on>        : SSL session cache ON/OFF (1/0).
+  <ClntAuth_flag>   : Client Authentication flag (1/0). If this option is 
+                      enabled then it must followed by cacert.pem.
+
+  Note : When thinserver is run, then use port 4433 to connect to this server
+         from SSL clients.
+
+  # ./thin_client
+
+  ./thin_client : <ipaddr> <port> <cipher> <crypto_nb_flag> <reconnect> 
+                  <Reneg> <ssl3/tls1> <clientcertflag>
+
+  where,
+  <ipaddr>         : Destination server IP address.
+  <port>           : Destination server port number.
+  <cipher>         : SSL/TLS cipher to be used.
+  <crypto_nb_flag> : Crypto Non-Blocking flag(1/0).
+  <reconnect>      : SSL reconnect option (1/0).
+  <Reneg>          : SSL renegotiation option (1/0).
+  <ssl3/tls1>      : SSL/TLS protocol to be used (1/0, For tls1 it is 1, 
+                     otherwise 0).
+  <clientcertflag> : Client certificate flag (1/0). This flag must be
+                     enabled when thin server is run with client authentication 
+                     enabled. If this flag is 1, it must be followed by 
+                     client certificate.
+
+  Example of running thin server/client applications
+  --------------------------------------------------
+  ./thin_server <Path-to-servercert> <Path-to-clientcert> 0 1 0 5 1 1 \
+  <Path-to-cacert.pem>
+
+  The above command runs thinserver with Crypto Non-Blocking flag ON, number
+  of child servers 5, cache ON and client authentication enabled.
+
+  ./thin_client 127.0.0.1 4433 AES128-SHA 0 1 1 1 1 <Path-to-clientcert>
+
+  The above command connects to thinserver using AES128-SHA cipher with
+  crypto Non-Blocking, reconnect, renegotiation options enabled.
+
+
+
+
+4. Building and Installing Apache Server
+========================================
+  The below steps are required to install Apache. To install Apache with SSL
+  support, step by step instructions are provided here. For detailed explanation
+  of these instructions, refer the INSTALL file under
+  mod_ssl-2.8.XX-1.3.XX folder.
+
+  Note : Before proceeding further ensure TurboSSL-0.9.8j is configured,
+         compiled and installed on the server host machine. Follow 
+         "Section-2 Building and Compiling TurboSSL" for more details.
+
+  a) The following versions of Apache and ModSSL were used to test 
+     this codebase.
+        Apache  apache_1.3.33
+        ModSSL  mod_ssl-2.8.22-1.3.33
+
+  b) To apply modssl patch to apache perform the following steps.
+
+     # cd <path-to-modssl>/mod_ssl-2.8.22-1.3.33
+     # ./configure --with-apache=<path-to-apache-source>/apache_1.3.33 \
+                   --with-ssl=<path-to-cavium-code>/apps/TurboSSL-0.9.8j \
+                   --enable-shared=ssl \
+                   --prefix=<path-to-apache-source>
+
+  c) Configure and compile the Apache software patched with TurboSSL codebase.
+        
+     # cd <path-to-apache-source>/apache_1.3.33/
+     # make clean
+     # make
+     # make certificate
+     # make install
+
+  d) Run apache
+     Assuming Nitrox driver and microcode were loaded earlier
+     (using ./init_nitrox command), then apache can be started.
+
+     # /path-to-apache/bin/apachectl startssl
+
+     With Apache now running, the target machine acts as a Web Server.
+     Access this web server from any browser to make sure Apache has started
+     properly. If running properly, all web-requests at port 443 (https://)
+     will be SSL enabled and macro calls are offloaded to the NITROX card.
+
+
+<EOF>
