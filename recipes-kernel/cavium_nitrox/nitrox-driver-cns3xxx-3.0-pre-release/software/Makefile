@@ -11,10 +11,10 @@ all: check_defines sub_all bin_install
 
 check_defines:
 #check for consistency of defines
+	echo "CC=${CC}"
 	@if test $(OS) = Linux ; then \
 		if test $(LINUX_VERSION) != $(LINUX_SRC_VERSION) ; then \
 			echo "Linux Kernel Path $(KERNEL_PATH) points to $(LINUX_SRC_VERSION) does not match Running kernel $(LINUX_VERSION) "; \
-			exit 1; \
 		fi \
 	fi
 	@if test $(OS) = Linux ; then \
