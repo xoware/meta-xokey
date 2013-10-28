@@ -1,6 +1,6 @@
 ARCH := arm
 #CROSS_COMPILE = mips64-octeon-linux-gnu-
-CROSS_COMPILE = arm-linux-
+CROSS_COMPILE ?= arm-linux-
 CC         := $(CROSS_COMPILE)gcc
 LD         := $(CROSS_COMPILE)ld
 STRIP      := $(CROSS_COMPILE)strip
@@ -8,7 +8,7 @@ STRIP      := $(CROSS_COMPILE)strip
 
 KERNEL_PATH ?= /home/jjose/vega/vega/cns3xxx_bsp/kernel/linux-2.6.31.1-cavm1/
 DRIVER_DEFINES  += -DCNS3000
-LINUX_VERSION=$(shell uname -r | sed -e 's/2.\(.\).*/2.\1/g') 
+LINUX_VERSION?=$(shell uname -r | sed -e 's/2.\(.\).*/2.\1/g') 
 LINUX_SRC_VERSION=$(shell grep -m 1 PATCHLEVEL $(KERNEL_PATH)/Makefile | sed -e 's/.*= \(.*\)/2.\1/g')
 
 
