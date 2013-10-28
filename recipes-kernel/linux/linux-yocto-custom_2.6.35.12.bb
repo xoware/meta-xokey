@@ -62,6 +62,7 @@ SRC_URI = "git://github.com/xoware/linux-2.6.35.12.git;branch=${KBRANCH};branch=
 
 SRC_URI += "file://defconfig"
 SRC_URI += "file://extra-cflags-override.patch"
+SRC_URI += "file://no_upnas.patch"
 
 KERNEL_EXTRA_ARGS="PATCH_UPNAS=n LOADADDR=0x2000000  V=1 KCFLAGS=-mno-unaligned-access"
 #  EXTRA_CFLAGS=-mno-unaligned-access
