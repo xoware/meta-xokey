@@ -10,7 +10,7 @@ OPENSSL?=../../apps/openssl-0.9.8i-bin/usr/local/ssl/
 CFLAGS = -I../../include -I../../api/ -I${OPENSSL}/include -Wall -DSSL
 LDFLAGS= -lcrypto -L${OPENSSL}/lib
 
-CC=arm-linux-gcc
+CC?=arm-linux-gcc
 
 ifeq ($(strip $(MC_TYPE)),MC2)
 CFLAGS += -DMC2
