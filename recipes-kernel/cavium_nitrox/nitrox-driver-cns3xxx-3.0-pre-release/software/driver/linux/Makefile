@@ -54,7 +54,7 @@ INCLUDE     += -I$(CAV_TOPDIR)/driver/linux -I$(CAV_TOPDIR)/driver/osi -I$(CAV_T
 INCLUDE     += -I/usr/local/Cavium_Networks/CN3XXX-SDK/target/include
 EXTRA_CFLAGS  = $(DRIVER_DEFINES) $(INCLUDE) $(INC_BUILD)
 OPT_FLAGS   = -O2
-WARN_FLAGS  = -Wall -Werror
+WARN_FLAGS  = -Wall
 DEBUG_FLAGS = -DCAVIUM_DEBUG_LEVEL=$(CAVIUM_DEBUG_LEVEL)
 EXTRA_CFLAGS      += $(OPT_FLAGS) $(WARN_FLAGS) $(DEBUG_FLAGS)
 
@@ -84,6 +84,7 @@ $(DRVOBJ)-objs := ../osi/command_que.o \
 
 
 all:
+	echo "make all"
 	@$(MAKE) -C .. all
 
 install:
@@ -92,23 +93,20 @@ install:
 clean:
 	@$(MAKE) -C .. clean
 
-all-linux: 
-	@if [ $(LINUX_VERSION) = 2.6 ]; then \
-		$(MAKE) -C $(KERNEL_PATH) SUBDIRS=`pwd` modules; \
-		ln -sf ./$(DRVOBJ).ko ./$(DRVOBJ).o; \
-	else \
-		$(MAKE) $(DRVOBJ).o; \
-	fi
+all-linux:
+	echo "all-linux"
+	$(MAKE) -C $(KERNEL_SRC) M=`pwd` V=s \
 
 
 #pkp_drv.o: $(pkp_drv-objs)
 $(DRVOBJ).o: $($(DRVOBJ)-objs)
+	echo "Make $(DRVOBJ) driver"
 	@$(LD) -r $^ -o $@
 
 
 
 ../osi/%.o : %.c 
-	$(CC) $(EXTRA_CFLAGS) -c $< -o $@
+	$(CC) $(EXTRA_CFLAGS) -I../../include/ -c $< -o $@
 
 clean-linux:
 	@rm -f *.o *.ko *~ core *.symvers *.mod.c ipsec_mc2.c cavium_speed.c .*.cmd
