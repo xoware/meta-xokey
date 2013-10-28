@@ -1,0 +1,13 @@
+diff --git a/Makefile b/Makefile
+index 90f84f9..cb296b8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1524,7 +1524,7 @@ UPNASDIR=drivers/net/cns3xxx-nas
+ PATCHES=$(UPNASDIR)/rename-cns3xxx-module.patch $(UPNASDIR)/cns3xxx_main.patch $(UPNASDIR)/cns3xxx_tool.patch $(UPNASDIR)/cns3xxx_ethtool.patch 
+ 
+ drivers/net/cns3xxx-nas/cns3xxx-nas/cns3xxx-nas-patch: $(PATCHES) $(wildcard drivers/net/cns3xxx/*.c drivers/net/cns3xxx/*.h)
+-ifneq ($(strip $(PATCH_UPNAS)), n)
++ifeq ($(strip $(PATCH_UPNAS)), y)
+ 	@$(kecho) 'Generating cns3xxx-nas...'
+ 	-@rm drivers/net/cns3xxx-nas/cns3xxx-nas $@ -rf 1>/dev/null 2>&1
+ 	@(if ! cp drivers/net/cns3xxx drivers/net/cns3xxx-nas/cns3xxx-nas -aL ; \
