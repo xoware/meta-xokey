@@ -1,0 +1,7 @@
+#
+# This will include a file in the current directory called .platform.`uname`
+#   which will perform any local customization needed per OS.
+#
+#OS != uname
+OS ?= Linux
+include $(BASEDIR)/platform.$(OS)

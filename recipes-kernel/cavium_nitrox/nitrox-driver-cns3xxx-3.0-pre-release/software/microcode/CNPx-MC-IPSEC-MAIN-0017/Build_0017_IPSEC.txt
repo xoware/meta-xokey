@@ -1,0 +1,24 @@
+
+Release Notes- Nitrox Px IPSEC Microcode: build 0017
+===============================================================================
+   Microcode Binary File Name:	main_ipsec2_px.out
+   Version Name: 		CNPx-MC-IPSEC-MAIN-0017
+
+Changes from previous build (0016)
+===============================================================================
+
+
+(I)FEATURES ADDED:
+--------------------------
+1. Added Dummy packet and TFC padding support as specified in RFC 4303.
+2. Added ESN support as specified in RFC 4303. 
+
+(II)BUG-FIX:
+-------------
+1. Interrupt coalescing with SG mode.
+
+(III)MISC:
+----------
+1. Optimized the code space. 
+
+

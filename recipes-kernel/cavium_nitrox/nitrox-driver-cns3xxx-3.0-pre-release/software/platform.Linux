@@ -1,0 +1,4 @@
+# Linux customizations
+PLATFORM= linux
+MKINPUT = $^
+OSLDFLAGS = -ldl

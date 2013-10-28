@@ -1,0 +1,16 @@
+./speed_ssl -l 64 -p MODEXP -m 64
+./speed_ssl -l 128 -p MODEXP -m 128
+./speed_ssl -l 256 -p MODEXP -m 256
+
+
+echo "RSA CRTTTTTT"
+./speed_ssl -l 53 -p RSA_CRT -m 64
+./speed_ssl -l 117 -p RSA_CRT -m 128
+./speed_ssl -l 245 -p RSA_CRT -m 256
+
+
+
+echo "RSA NOOO   CRTTTTTT"
+./speed_ssl -l 53 -p  RSA_NOCRT -m 64
+./speed_ssl -l 117 -p RSA_NOCRT -m 128
+./speed_ssl -l 245 -p RSA_NOCRT -m 256

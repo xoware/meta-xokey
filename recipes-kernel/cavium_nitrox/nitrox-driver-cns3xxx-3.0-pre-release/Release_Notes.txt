@@ -1,0 +1,214 @@
+Cavium Reference Software, NITROX-Driver-Linux-SDK-Pre-Release-3.0
+File Release_Notes.txt
+Copyright Cavium Networks
+
+This SDK contains source code for the following:
+   - Nitrox driver for Linux Kernel v2.6.27
+   - Nitrox SSL and IPSec microcodes and associated C-APIs
+   - Nitrox Power-On-Test-Suite (POTS) utility
+        * Nitrox Hardware/Firmware test software example
+
+    See below for version-specific details or changes to this SDK, 
+    and a list of currently released patches (if any).
+
+
+
+
+ Release Notes for Nitrox Pre-release version 3.0
+ =================================================
+    The following directories will be created where this software is installed:
+
+    ./cavium
+        ./software
+            ./api
+            ./driver
+                ./osi
+                ./linux
+            ./docs
+                ./html
+            ./include
+            ./microcode
+            ./utils
+                ./pots
+                ./speed-ssl
+                ./speed-ipsec
+
+
+
+
+ Supported Features
+ ==================
+     System architecture
+     -------------------
+     - 32/64 bit Intel/AMD platforms
+     - Little Endian
+     - Big Endian PPC Architecture
+     - SMP and Non-SMP 
+
+     Operating System and Kernel versions
+     ------------------------------------
+     - Fedora Core 10 rel 
+     - Linux Kernel v2.6.27
+
+     NOTE: This SDK is only tested on the Operating System and System 
+           Architecture listed above. It may not function as expected 
+           on other operating systems/architectures. To use this SDK 
+           with any other OS or system architecture (including 
+           Big-Endian CPU), additional porting and retesting by the 
+           user may be required.
+
+     Nitrox Cards
+     ------------
+     - All variants of Nitrox-Lite, Nitrox-I and Nitrox-Px 
+
+     Single/Multi-Card Support
+     -------------------------
+     - 1x, 2x Nitrox-Lite (NHB or NMB)
+     - 1x, 2x Nitrox-I    (NHB or NPB)
+     - 1x, 2x Nitrox-Px   (NHB)
+     - 4x     Nitrox-Px   (NHB4)
+
+     Driver Features
+     --------------- 
+     - Data Statistics Counters
+     - IRQ Coalescing (Supported only for Nitrox-Px)
+
+     NPlus Features
+     --------------
+     This is a feature where both SSL and IPSec packet processing (by Nitrox
+     hardware) is done parallelly.
+     The following features are supported by different families of Nitrox.
+
+     Nitrox-I    --> IPSec in Mainline and SSL in Plus mode.
+     Nitrox-Lite --> IPSec in Mainline and SSL in Plus mode.
+     Nitrox-Px   --> Both IPSec and SSL in Mainline mode. 
+
+
+
+
+ Known Issues 
+ ============
+  - [Bug 484] POTS BIST test fails for Nitrox-Px.
+  - [Bug 496] HMAC Pots test fails with Nitrox-Lite Plus microcode if
+    interrupt bit is enabled.
+  - Speed Non-Blocking test application need to be fixed for further 
+    performance tuning.
+
+
+
+
+ Change History
+ ============== 
+ NITROX-Driver-Linux-SDK-Pre-Release-3.0
+ ---------------------------------------
+    - Nitrox driver has been seperated from NITROX-SSL-Linux-SDK-2.0 and 
+      NITROX-IPSec-Linux-SDK-2.0. 
+      From this release onwards, Nitrox IPSec and SSL will be released
+      as seperate packages.
+    - PCI device probe and initialization seperated from the init_module and
+      defined through cavium_probe and cavium_driver_init.
+    - The Nitrox driver can be used to handle both SSL and IPSec requests
+      in parallel in NPlus mode without rebuilding the driver.
+    - MLM_PROTOCOL and CONFIG_NPLUS compile time flags and their dependencies
+      are removed from Nitrox driver.
+    - SSL and/or IPSec microcodes can be loaded simultaneously by specifying 
+      core combinations for SSL and/or IPSec.
+    - CAVIUM_GP_GRP, CAVIUM_IPSEC_GRP, CAVIUM_SSL_GRP are added as a group to 
+      differentiate from SSL and IPSec calls in n1_operation_buffer. All IPSec
+      and SSL APIs are changed accordingly.
+    - IOCTL_N1_GET_DRIVER_STATE case added in n1_ioctl requests to identify 
+      the state of the driver. This is required when POTS utility trying to
+      reload the ssl/ipsec microcodes.
+    - Now, API documentation can be found in cavium/documentation.html.
+
+
+The previous SSL and IPSec release Change History is listed here.
+
+NITROX-SSL-Linux-SDK-2.0
+------------------------
+    - Nitrox driver is ported to 2.6.27 kernel version.
+    - This release is based on openssl-0.9.8j open source.
+    - SSL Handshake and Record Processing offload to Nitrox are made optional 
+      in this release.
+      For more information, read cavium/software/apps/linux_ssl_install.txt.
+    - Nitrox-Px, now supports IRQ-COALESCING.
+    - COUNTERS support added for all family of Nitrox Processors. This feature
+      gives SSL packet processing statistics by Nitrox hardware.
+      Nitrox processed SSL data statistics can be found at 
+      /proc/cavium/data_stats.
+    - All DMA lists (Pending/Direct/SG/Completion) moved to device structure.
+    - Single buffer pool manager for all Nitrox devices.
+    - Interrupt handler now checks for PCI error register as well.
+    - DUMP_FAILING_REQUESTS pre-processor define added to dump out all failing
+      requests.
+    - do_speed() API is added in the driver for benchmarking the Nitrox chip 
+      performance.
+    - SSL Speedtest performance benchmarking application added.
+    - Csp1GetAllResults() function now also supports 
+      CAVIUM_MULTICARD_API. This is used in measuring the Non-Blocking
+      perfomrnace of the Nitrox processors for multicard.
+    - Documentation of all SSL APIs are added in doxygen format. 
+    - CAVIUM_MULTICARD_API is enabled by default in Makefile.Linux. 
+      Enabling this flag works with 1x, 2x and 4x Nitrox cards.
+    - Nitrox-Px now supports 3K and 4K RSA certificates.
+    - This release is also tested with BigEndian architecture.
+    - POTS BIST test is not supported for Nitrox-Px in this release.
+
+
+Bug Fixes: 
+    - /proc/cavium entry bug fixes when dumping more than a single page.
+    - Session Resumption bug fix for Nitrox-Px 4x.  Now it uses same random 
+      number for all devices to set same secret key.
+    - [Bug 398] Nitrox-Px microcode bug fix for 3K and 4K RSA certificates.
+    - [Bug 481] In TurboSSL, master secret key buffer length is doubled for 
+      supporting 3K and 4K RSA certificates incase of Nitrox-Px.
+
+
+NITROX-IPSec-Linux-SDK-2.0
+--------------------------
+   - This SDK supports Cavium IPSec as a loadable module. This ensures, no 
+     kernel patches for IPSec offload to Nitrox.
+   - Nitrox driver is ported to kernel v2.6.27.
+   - INTERRUPT_ON_COMP flag disabled. 
+      This is disabled because in NITROX_PX case this flag is replaced by 
+      IRQ_COALSCING. In other parts, Interrupt bit is on with minimal load. 
+      This code is brought out of the define. With heavy load conditions,
+      Interrupt bit is off.
+   - IPv6 in IPv4 IPSec tunnel support added.
+   - IRQ-COALESCING flag removed from Makefile.Linux. IRQ-COALESCING
+     works by default for Nitrox-Px.
+   - 2x and 4x Nitrox-Px is fully tested with this release. 
+   - 2x Nitrox-I is tested with this release. 
+   - Nitrox IPSec driver API documentation is added.
+   - do_speed() API is added in the Nitrox driver which can be for 
+     benchmarking the Nitrox processors (using CAVIUM_SPEED macro).
+   - Multicard support added for Csp1GetAllResults() API (used in Non-Blocking
+     IPSec speedtest application).
+   - IPSec speedtest performance benchmarking tool added.
+   - This release is also tested with big endian architecture.
+   - IPSec Tools is upgraded to v0.7.2.
+
+ NITROX-IPSec-Linux-Pre-Release-SDK
+ ----------------------------------
+   - Nitrox-Px support added with following feature additions
+      1. IRQ-COALESCING
+      2. COUNTERS.
+   - Round robin scheduling for selecting a device implemented within 
+     IPSec APIs.
+   - All DMA lists (Pending/Direct/SG/Completion) moved to device structure.
+   - Single buffer pool manager for all Nitrox devices.
+   - Interrupt handler now checks for PCI error register as well.
+   - Proc entry bug fixes when dumping more than a single page. 
+   - DUMP_FAILING_REQUESTS pre-processor define added to dump out all failing
+     requests.
+
+Bug Fixes : 
+-----------
+      [Bug 451] Timeout issues while running traffic over tunnel mode ESP 
+                and AH together.
+      [Bug 454] Kernel crash issue while accessing /proc/cavium after 
+                unloading Nitrox driver
+      [Bug 443, 445] POTS related issues.
+
+
+<EOF>

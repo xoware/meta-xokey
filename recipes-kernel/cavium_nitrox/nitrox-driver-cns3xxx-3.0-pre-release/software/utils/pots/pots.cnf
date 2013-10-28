@@ -1,0 +1,59 @@
+# This is the configuration file for pots program
+
+# Each crypto test has the following configuration parameters:
+# 	- test_id	(0 - 4 (for RC4, HMAC, 3DES, AES, MOD_EX))
+#	- test_name (should be one of: RC4, HMAC, 3DES, AES, MOD_EX
+#	- start_key_size (in bytes)
+#	- end_key_size
+#	- increment for key 
+#	- start_input_data_size (in bytes)
+#	- end_input_data_size
+#	- increment for msg  
+#
+# For example: for RC4 test, for key size starting at 8 bytes and
+#	The following configuration will run the rc4 test starting
+#   with key size of 8 bytes and input msg size of 1 byte. It
+#	will increment the msg size by 1 byte and rerun the test. It
+#   will keep doing this until the msg size becomes 16384 bytes.
+#	Then it will change/increment teh keysize by 1 byte and
+#   repeat the test, until the key size becomes 16 bytes.
+#   (So the last test that is run is with key size of 16 bytes
+#    and msg size of 16384 bytes).
+#TEST_DESC= 0, RC4, 8,16,1 1,16384,1
+
+TEST_DESC= 0, RC4, 8,64,32 1,16384,1024
+#TEST_DESC= 0, RC4, 16,64,16 1,16384,1
+
+TEST_DESC= 1, HMAC, 8,48,8 8,160,32
+#TEST_DESC= 1, HMAC, 8,24,8 1,16384,1
+
+# Note: For 3DES, we use a fixed key size of 192 bits (24 bytes)
+#	    and an iv of 64 bits (8 bytes)
+# this works:
+#TEST_DESC= 2, 3DES, 24, 24,1 8,160,8
+TEST_DESC= 2, 3DES, 24, 24,1 8,16384,2048
+#failes: (becuase ssl api/microcode only supports multiple of 8 bytes input
+#TEST_DESC= 2, 3DES, 24, 24,1 8,16,1
+#TEST_DESC= 2, 3DES, 24, 24,1 1,16384,1
+
+# This tests key sizes of 128, 192 and 256 bits
+# msg size shold be incremements of 16 bytes
+# So any entry for AES here, is actually ignored
+# works
+#TEST_DESC= 3, AES, 24, 24,1 16,160,16
+TEST_DESC= 3, AES, 16,32,8 16, 16386, 1024
+
+# Note: For MOD_EX, the values should be for:
+#	    p = x pow e mod m
+#		where: key_size = e and msg size = length of modulus
+# Here:
+#	key is the exp, and msg is the modlen
+# NOTE: min modlen = 24 bytes, max = 256 
+#		
+# works:
+TEST_DESC= 4, MOD_EX, 8,8,1 24,256,32
+#TEST_DESC= 4, MOD_EX, 8,8,1 32, 256, 32
+#TEST_DESC= 4, MOD_EX, 8,8,1  24,256,8
+#TEST_DESC= 4, MOD_EX, 8,8,1  248,256,8
+# fails:
+#TEST_DESC= 4, MOD_EX, 0,5,1 8, 32, 256, 32

@@ -1,0 +1,69 @@
+#! /usr/bin/perl
+
+# This script to print the installed packaged in the Nitrox Directory
+
+$driver_release_notes = "../../Release_Notes.txt";
+$ssl_release_notes = "../apps/Release_Notes_ssl.txt";
+$ipsec_release_notes = "../apps/Release_Notes_ipsec.txt";
+
+$x=qx(head -1 $driver_release_notes 2>/dev/null|wc -w);
+chomp($x);
+
+if ($x<=0){
+print "Nitrox Driver Package not installed yet\n";
+exit;
+}
+
+print "\n";
+print "Nitrox Installed SDKs \n";
+print "======================\n\n";
+
+$package_name = `head -1 $driver_release_notes|cut -d" " -f$x`;
+print "$package_name";
+
+#SSL Package List
+$x=qx(head -1 $ssl_release_notes 2>/dev/null|wc -w);
+chomp($x);
+
+if ($x>0){
+$package_name = `head -1 $ssl_release_notes|cut -d" " -f$x`;
+print "$package_name";
+}
+
+#IPSec Package List
+$x=qx(head -1 $ipsec_release_notes 2>/dev/null|wc -w);
+chomp($x);
+
+if ($x>0){
+$package_name = `head -1 $ipsec_release_notes|cut -d" " -f$x`;
+print "$package_name";
+}
+
+print "\n\nMicrocode Versions\n";
+print "===================\n";
+
+print "\t\t\tMicrocode Name\t\tMicrocode Version\n";
+print "\t\t\t--------------\t\t-----------------\n";
+print "Nitrox-I:";
+print "\t\tmain_ssl2_n1.out\t";
+print `strings ../microcode/main_ssl2_n1.out |head -1`;
+print "\t\t\tplus_ssl2_n1.out\t";
+print `strings ../microcode/plus_ssl2_n1.out |head -1`;
+print "\t\t\tmain_ipsec2_n1.out\t";
+print `strings ../microcode/main_ipsec2_n1.out |head -1`;
+
+print "\nNitrox-Lite:";
+print "\t\tmain_ssl2.out\t\t";
+print `strings ../microcode/main_ssl2.out |head -1`;
+print "\t\t\tplus_ssl2.out\t\t";
+print `strings ../microcode/plus_ssl2.out |head -1`;
+print "\t\t\tmain_ipsec2.out\t\t";
+print `strings ../microcode/main_ipsec2.out |head -1`;
+
+print "\nNitrox-Px:";
+print "\t\tmain_ssl2_px.out\t";
+print `strings ../microcode/main_ssl2_px.out |head -1`;
+print "\t\t\tmain_ipsec2_px.out\t";
+print `strings ../microcode/main_ipsec2_px.out |head -1`;
+
+print "\n\n";

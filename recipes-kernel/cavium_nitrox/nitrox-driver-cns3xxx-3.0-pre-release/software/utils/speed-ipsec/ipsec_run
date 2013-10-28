@@ -1,0 +1,9 @@
+echo "Pkt Size in Bytes"   "Thrghput in Mbps"
+./speedtest -i outbound -l 64   -p ESP -t tunnel -e AES128 -a SHA1
+./speedtest -i outbound -l 128  -p ESP -t tunnel -e AES128 -a SHA1
+./speedtest -i outbound -l 256  -p ESP -t tunnel -e AES128 -a SHA1
+./speedtest -i outbound -l 512  -p ESP -t tunnel -e AES128 -a SHA1
+./speedtest -i outbound -l 768  -p ESP -t tunnel -e AES128 -a SHA1
+./speedtest -i outbound -l 1024 -p ESP -t tunnel -e AES128 -a SHA1
+./speedtest -i outbound -l 1400 -p ESP -t tunnel -e AES128 -a SHA1
+./speedtest -i outbound -l 1450 -p ESP -t tunnel -e AES128 -a SHA1

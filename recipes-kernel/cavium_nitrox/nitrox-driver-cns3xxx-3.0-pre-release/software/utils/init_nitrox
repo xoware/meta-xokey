@@ -1,0 +1,233 @@
+#!/usr/bin/perl
+
+$part_num="";
+$ssl=-1;
+$ipsec=-1;
+$proto_indx=0;
+
+sub usage 
+{
+   print "Usage: \n    ./init_nitrox [Nitrox Part_num] ssl=<cores> and/or ipsec=<cores> \n\n";
+   print "    Don't use space before and after '='\n";
+   print "    You can opt either SSL or IPSec or both protocols.\n";
+   print "    If you want use all available cores for a protocol, type 'ssl' or 'ipsec'.\n\n";
+   print "    Use 'Part_num' arg, only if your Nitrox Card matches with the below list. \n";
+   print "    Part number list: CN1120, CN1220, CN1320, CN1001, CN1005, CN505, CN501.\n\n";
+   exit;
+}   
+
+sub check_num 
+{
+   $num=`echo -n $_[0]|cut -d'=' -f2`;
+   if(!($num =~/^-?\d/)||$num < 0) {
+      print "Error: The core number should be a non-negative number\n";
+      print "./init_nitrox -h, for more details\n\n";
+	  exit;
+   }
+   return $num;
+}   
+
+if ($#ARGV < 0) {
+   usage ();
+}   
+
+if ($ARGV[0] =~ "^-h" or $ARGV[0] =~ "^--h")
+{
+   usage ();
+}
+
+# Check whether first argument is Nitrox part number number
+
+if ($#ARGV > 0) {
+   if ($ARGV[0] =~ "^CN") {
+      if ($ARGV[0] eq CN1220 or $ARGV[0] eq CN1320 or $ARGV[0] eq CN1001 or $ARGV[0] eq CN1005 or $ARGV[0] eq CN505 or $ARGV[0] eq CN501 or $ARGV[0] eq CN1120)
+      {
+#        $part_num = $ARGV[0];
+		 $config_part="config_part=".$ARGV[0];
+         $proto_indx=1;
+      }
+      else {
+         print "Error: Invalid Part Number or Wrong arguments\n";
+         print "./init_nitrox -h, for more details\n\n";
+		 exit;
+	  }
+   }
+}
+
+# Converts all command args to lower case.
+for ($i=0; $i<=$#ARGV; $i++) {
+   $ARGV[$i] = lc($ARGV[$i]);
+}   
+
+if ($#ARGV eq $proto_indx) {
+   if ($ARGV[$proto_indx] eq "ssl" or $ARGV[$proto_indx] eq "ipsec") {
+	  $ARGV[$proto_indx] = $ARGV[$proto_indx]."=0";
+   }
+   elsif ($ARGV[$proto_indx] =~ "^ssl=" or $ARGV[$proto_indx] =~ "^ipsec=") {
+      check_num($ARGV[$proto_indx]);
+   }
+   else {
+      usage ();
+   }  
+}   
+
+elsif (($ARGV[$proto_indx] =~ "^ssl=" and $ARGV[$proto_indx+1] =~ "^ipsec=") ||
+       ($ARGV[$proto_indx] =~ "^ipsec=" and $ARGV[$proto_indx+1] =~ "^ssl=")) {
+   $core1 = check_num ($ARGV[$proto_indx]);
+   $core2 = check_num ($ARGV[$proto_indx+1]);
+   chomp($core1); chomp ($core2);
+   if ($core1 eq 0 or $core2 eq 0) {
+      print "Both ssl and ipsec core numbers should be greater than Zero\n";
+      print "./init_nitrox -h, for more details\n\n";
+	  exit;
+   }
+}
+else {
+   usage ();
+}   
+
+$OS = `uname`;
+chomp($OS);
+if ($OS eq Linux)
+{
+	$check1 = `lsmod | grep pkp| cut -f1 -d \" \"`;
+	chomp($check1);
+	if($check1)
+	{
+		$check2=system("rmmod $check1");
+		if($check2 != 0)
+		{
+			die " can't unload driver. Driver is busy \n";
+		}
+	}
+	$check3= `ls boot.out 2>/dev/null`;
+	chomp($check3);
+	if($check3)
+	{
+		system("rm -f boot.out main_ssl.out main_ipsec.out");
+	}	
+	print ("insmod ./pkp_drv.ko $config_part $ARGV[$proto_indx] $ARGV[$proto_indx+1]\n");
+	system ("insmod ./pkp_drv.ko $config_part $ARGV[$proto_indx] $ARGV[$proto_indx+1]");
+
+	sleep 1;
+	print "./csp1_init $ARGV[$proto_indx] $ARGV[$proto_indx+1]\n";
+	if (system("./csp1_init $ARGV[$proto_indx] $ARGV[$proto_indx+1]"))
+	{
+		print "Error Loading Microcode \n";
+		if (system("rmmod pkp_drv"))
+		{
+			die "can't unload driver.. \n";
+		}
+		print "Unloaded the driver\n";
+	}
+}
+elsif ($OS eq FreeBSD)
+{
+	system("kldstat | grep pkp_drv | cut -f12 -d' ' > temp");
+	open(device,"temp");
+	$check1=<device>;
+	close(device);
+	chomp($check1);
+	if($check1)
+	{
+		$check2=system("kldunload $check1");
+		if($check2 != 0)
+		{
+			die "cant unload driver. Driver is busy \n";
+		}
+	}
+	open(one,"main.out");
+	$check3=<one>;
+	chomp($check3);
+	if ($check3)
+	{
+		system("rm main.out ");
+		system("rm boot.out");
+	}
+
+	$check4=system("kldload ./pkp_drv.ko");
+
+	if (!($check4))
+	{
+ 		$check4=system("../utils/mcode_links");
+	}
+
+	if (!($check4))
+	{
+		sleep 1;
+		if (system("./csp1_init boot.out main.out"))
+		{
+			print "Error Loading Microcode .. So unloading driver\n";
+			if (system("kldunload pkp_drv"))
+			{
+				die "cant unload driver .. \n";
+			}
+		}
+	}
+	system("rm temp");
+} 
+else
+{
+	die "Unsupported OS $OS";
+}
+
+
+#
+# $Id: init_nitrox,v 1.11 2009/09/24 13:39:41 aravikumar Exp $
+# $Log: init_nitrox,v $
+# Revision 1.11  2009/09/24 13:39:41  aravikumar
+# usage display info changed
+#
+# Revision 1.10  2009/09/17 11:58:56  aravikumar
+# Usage print info modified
+#
+# Revision 1.9  2009/09/10 07:10:28  aravikumar
+# NPLUS macro dependency removed and made it dynamic
+#
+# Revision 1.8  2008/12/16 12:04:42  jsrikanth
+# Added Common driver and Multi-Card Changes for FreeBSD
+#
+# Revision 1.7  2008/08/14 07:07:02  aramesh
+# added command line argument to script.
+#
+# Revision 1.6  2008/07/07 05:50:21  aramesh
+# deleted 3des/rc4 test.
+#
+# Revision 1.5  2008/07/02 12:42:06  aramesh
+# deleted config part and corresponding flags.
+#
+# Revision 1.4  2007/10/16 06:29:25  aramesh
+# --Changes to support NLite/N1 family.
+#
+# Revision 1.3  2007/05/01 08:42:12  kchunduri
+# * modified for FreeBSD NLE support
+#
+# Revision 1.2  2007/02/21 04:21:32  panicker
+# Modified for NLE
+#
+# Revision 1.1  2007/02/21 04:07:16  panicker
+# *
+#
+# Revision 1.4  2005/09/06 06:33:23  ksadasivuni
+# - Merging old FreeBSD 4.11 release with CVS Head
+#
+# Revision 1.2  2005/05/02 11:10:30  rkumar
+# Fixed the message when the driver is not present
+#
+# Revision 1.1.1.1  2005/04/26 04:59:45  rkumar
+# Initial FreeBSD checkin
+#
+# Revision 1.2  2004/11/10 06:05:29  ckiran
+# Modified for microcode load error
+#
+# Revision 1.1.1.1  2004/07/28 06:43:29  rkumar
+# Initial Checkin
+#
+# Revision 1.2  2004/04/23 21:52:40  bimran
+# dunno why?
+#
+# Revision 1.1  2004/04/19 18:45:41  bimran
+# Consolidated all variants of ini_nitrox_mc* to just one init_nitrox.
+#
+# 
+

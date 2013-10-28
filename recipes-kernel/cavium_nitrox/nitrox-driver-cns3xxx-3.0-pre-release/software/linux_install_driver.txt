@@ -1,0 +1,179 @@
+File linux_install_driver.txt
+Copyright Cavium Networks
+
+
+Table of Contents
+=================
+1. Pre-requisites
+2. Directory Structure for Nitrox Release
+3. Driver Installation Notes
+4. Loading Nitrox Driver
+5. Running the sample test utilities 
+
+1. Pre-requisites
+==================
+  a) It is assumed that Nitrox Board(s) is inserted in the host machine 
+     server as per the specifications outlined in the 'Hardware Quick Start 
+     Guide'.
+  b) Host system requirements.
+     - 32 bit or 64 bit Little Endian
+     - Fedora Core 6.0/10 Operating System (Kernel 2.6.27) 
+
+2. Directory Structure for Nitrox release
+============================================
+    ./cavium
+        ./software
+            ./api
+            ./apps
+            ./driver
+                ./osi
+                ./linux
+            ./docs
+                ./html
+            ./include
+            ./microcode
+            ./utils
+                ./pots
+                ./speed-ipsec
+                ./speed-ssl
+
+
+3. Driver Installation Notes
+============================
+  a) Install the package on the target system in the desired location.
+     (/home is assumed as the default location throughout this document).
+      # cd /home
+      # cp /mnt/NITROX-Driver-Linux-SDK-Pre-Release-3.0/NITROX-Driver-Linux-SDK-Pre-Release-3.0.tgz .
+       (It is assumed that the software is copied from CD-ROM)
+      # tar -zxvf NITROX-Driver-Linux-SDK-Pre-Release-3.0.tgz
+
+      The release notes can be found at cavium/Release_Notes.txt.
+
+  b) Change directory to the cavium driver
+      # cd /home/cavium/software
+ 
+  c) Edit the Makefile.Linux in "/home/cavium/software" folder to configure 
+     it as needed for your environment.
+
+      MICROCODE=MC2
+      CAVIUM_DEBUG_LEVEL=0
+      (CAVIUM_DEBUG_LEVEL can be changed to 0,1,2,3. Or debug level 
+      can be changed at run-time from /proc/cavium/debug_level)
+
+         debug_level=0  ======> Only errors are output
+         debug_level=1  ======> Minimal debug
+         debug_level=2  ======> More debug
+         debug_level=3  ======> buffer dumps
+
+      To enable counters, set following flag
+      COUNTERS=y
+      Setting above flag gives Nitrox packet processing statistics.
+      This can be seen in /proc/cavium/data_stats.
+
+
+      Note : If the maximum IPSec packet size to be processed by Nitrox is
+      greater than 4KB then one need to change the SCRATCHPAD_SIZE in
+      cavium/software/driver/osi/cavium.h to 'some' higher value (default
+      SCRATCHPAD_SIZE is 4096).
+
+      Example :
+      #define SCRATCHPAD_SIZE  3*4096
+
+      The maximum SCRATCHPAD_SIZE supported by Nitrox is 15*4096.
+
+
+   d) Build the driver and utilities
+         # cd /home/cavium/software/
+         # make clean
+         # make
+
+
+4. Loading the Nitrox driver
+============================
+    Usage: ./init_nitrox [Nitrox Part_num] ssl=<cores> ipsec=<cores>
+
+    NOTE: [Nitrox Part_num] argument is required only Nitrox part# is one of
+          the following. 
+          Part_num list: CN1120, CN1220, CN1320, CN1001, CN1005, CN505, CN501.
+
+    There are three options to load the Nitrox driver
+    - Loading driver only for SSL.
+    - Loading driver only for IPSec.
+    - Loading driver for both SSL and IPSec.
+
+    Loading driver only for SSL
+    -------------------------
+      # cd /home/cavium/software/bin
+
+      To load SSL on all available cores
+         #  ./init_nitrox ssl
+                   (or)
+         #  ./init_nitrox ssl=0
+                 
+      To load SSL on some cores
+      Example:
+         # ./init_nitrox ssl=4   (ssl will load on four cores)
+      
+
+    Loading driver only for IPSec
+    ------------------------------
+      # cd /home/cavium/software/bin
+
+      To load IPSec on all available cores
+         #  ./init_nitrox ipsec
+                   (or)
+         #  ./init_nitrox ipsec=0
+  
+      To load IPSec on some cores
+      Example:
+         # ./init_nitrox ipsec=4   (ipsec will load on four cores)
+
+
+    Load driver for both SSL and IPSec
+    ----------------------------------
+      # cd /home/cavium/software/bin
+
+      # ./init_nitrox ssl=4 ipsec=4 
+
+      The above command will load both SSL and IPSec on four cores each.
+
+
+Note: If the driver is loaded on Nitrox-Px 4x Part using any of the above 
+      methods, then microcodes will be loaded on each of the Nitrox-Px 4x 
+      devices.
+      
+      Example:
+      Running the following command 
+      # ./init_nitrox ssl=2 ipsec=2
+      will load ssl and ipsec microcodes on 2 cores each on all the 
+      four Nitrox-Px 4x devices.
+
+      or
+
+      # ./init_nitrox ssl=4 
+      will load ssl microcode on 4 cores on each of the four Nitrox-Px 4x 
+      devices.
+      ,etc.
+      
+
+4. Running sample test utilities 
+=================================
+   a) The various utilities for testing the various functionalities can be found 
+      at ./utils/pots directory. 
+
+      Executing POTS tests
+        # cd ./utils/pots
+        # ./pots_main
+
+      (For more details regarding POTS, refer to ./utils/pots/README.txt)
+
+   b) To run speed-ssl, refer to ./utils/speed-ssl/README.txt
+
+   c) To run speed-ipsec, refer to ./utils/speed-ipsec/README.txt
+
+   d) To know the list of packages installed and microcode versions, 
+      execute the the below command
+        # cd ./utils
+        # ./get_package_list
+  
+<EOF>

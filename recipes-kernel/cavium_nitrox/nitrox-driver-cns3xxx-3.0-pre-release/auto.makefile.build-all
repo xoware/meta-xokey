@@ -1,0 +1,132 @@
+#make -f star_auto.makefile KERNEL=$(KERNEL) TARGET_ROOTFS_DIR=$(TARGET_ROOTFS_DIR) CROSS_COMPILE=${CROSS_COMPILE}
+#
+# Initial parameters (don't change)
+#
+PWD=$(shell pwd)
+MYPATH=$(shell dirname ${PWD})
+MYNAME=$(shell basename ${PWD})
+
+
+# 
+# Received Parameter (don't change)
+#  
+#
+TARGET_ROOTFS_DIR?=$(shell pwd)/target
+KERNEL?=$(shell pwd)/../../kernels/linux
+CROSS_COMPILE?=arm-linux-
+
+#
+# Application specific application, change as needed
+#
+CC=${CROSS_COMPILE}gcc
+#PARAM= CC=${CC} DESTDIR=${TARGET_ROOTFS_DIR} CROSS_COMPILE=${CROSS_COMPILE}
+PARAM= -C software KERNEL_PATH=${KERNEL}
+
+PARAM_TO_DRV_AUTOMAKEFILE= KERNEL=${KERNEL} CROSS_COMPILE=${CROSS_COMPILE} TARGET_ROOTFS_DIR=${TARGET_ROOTFS_DIR} APIDIR=${PWD}/software/api CAVIUM_INCLUDEDIR=${PWD}/software/include/ ROOTFS_DIR_FOR_LIB=${TARGET_ROOTFS_DIR} 
+
+PARAM_TO_DRV_AUTOMAKEFILE_for_ipsec_tools= KERNEL=${KERNEL} CROSS_COMPILE=${CROSS_COMPILE} TARGET_ROOTFS_DIR=${TARGET_ROOTFS_DIR} APIDIR=${PWD}/software/api CAVIUM_INCLUDEDIR=${PWD}/software/include/ ROOTFS_DIR_FOR_LIB=${ROOTFS_DIR_FOR_LIB} 
+
+#
+# build: configure, then build
+#
+build: info
+	@echo action=$@
+
+	#make -f auto.makefile.lib ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openssl-0.9.8i/ install
+	OPENSSL=${ROOTFS_DIR_FOR_LIB}/usr/local/ssl make ${PARAM}
+	
+	make -f auto.makefile.lib ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/TurboSSL-0.9.8j/ ;
+	make -f auto.makefile.lib ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openssl-0.9.8i-cns3xxx/ ;
+
+clean: info
+	@echo action=$@
+	make $@ ${PARAM}
+	
+	make -f auto.makefile.lib ${PARAM_TO_DRV_AUTOMAKEFILE} $@ -C software/apps/TurboSSL-0.9.8j/ ;
+	make -f auto.makefile.lib ${PARAM_TO_DRV_AUTOMAKEFILE} $@ -C software/apps/openssl-0.9.8i-cns3xxx/ ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} $@ -C software/apps/sslperf/ ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} $@ -C software/apps/openvpn-2.1_rc18/ ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} $@ -C software/apps/nitrox-ipsec ;
+
+install: info
+	@echo action=$@
+#Install nitrox driver
+	mkdir ${TARGET_ROOTFS_DIR}/root/nitrox/driver -p
+	cp software/bin/* ${TARGET_ROOTFS_DIR}/root/nitrox/driver -v
+	cp software/microcode ${TARGET_ROOTFS_DIR}/root/nitrox -av
+	
+#Install pre-built openssl
+	#cp software/apps/openssl-0.9.8i-bin/* ${TARGET_ROOTFS_DIR} -a
+#Install nitrox-ipsec
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE_for_ipsec_tools} USE_CAVIUM_ENGINE=y -C software/apps/nitrox-ipsec clean;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE_for_ipsec_tools} USE_CAVIUM_ENGINE=y -C software/apps/nitrox-ipsec ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE_for_ipsec_tools} USE_CAVIUM_ENGINE=y -C software/apps/nitrox-ipsec install;
+#Un-install pre-built openssl
+	rm -rf ${TARGET_ROOTFS_DIR}/usr/local/ssl
+	
+#Install TurboSSL	
+	make -f auto.makefile.lib ${PARAM_TO_DRV_AUTOMAKEFILE} $@ -C software/apps/TurboSSL-0.9.8j/; 
+	
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openvpn-2.1_rc18/ clean;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openvpn-2.1_rc18/ ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openvpn-2.1_rc18/ install;
+	if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/sbin/openvpn | grep libssl ; then exit 1; else exit 0;fi;
+	mv ${TARGET_ROOTFS_DIR}/sbin/openvpn ${TARGET_ROOTFS_DIR}/sbin/openvpn.turbossl -v;
+	
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/sslperf clean;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/sslperf ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/sslperf install;
+	if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/bin/sslperf | grep libssl ; then exit 1; else exit 0;fi;
+	mv ${TARGET_ROOTFS_DIR}/bin/sslperf ${TARGET_ROOTFS_DIR}/bin/sslperf.turbossl -v;
+	
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/thin_apps clean;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/thin_apps ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/thin_apps install;
+	if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/bin/thin_server | grep libssl ; then exit 1; else exit 0;fi;
+	if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/bin/thin_client | grep libssl ; then exit 1; else exit 0;fi;
+	#mv ${TARGET_ROOTFS_DIR}/bin/thin_server ${TARGET_ROOTFS_DIR}/bin/thin_server.turbossl -v;
+	#mv ${TARGET_ROOTFS_DIR}/bin/thin_client ${TARGET_ROOTFS_DIR}/bin/thin_client.turbossl -v;
+	
+	mv ${TARGET_ROOTFS_DIR}/usr/local/ssl ${TARGET_ROOTFS_DIR}/usr/local/turbossl -v;
+#Install openssl	
+	make -f auto.makefile.lib ${PARAM_TO_DRV_AUTOMAKEFILE} $@ -C software/apps/openssl-0.9.8i-cns3xxx/;
+	
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openvpn-2.1_rc18/ clean;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openvpn-2.1_rc18/ ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/openvpn-2.1_rc18/ install;
+	if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/sbin/openvpn | grep libssl ; then exit 1; else exit 0;fi;
+	mv ${TARGET_ROOTFS_DIR}/sbin/openvpn ${TARGET_ROOTFS_DIR}/sbin/openvpn.openssl -v;
+	
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/sslperf clean;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/sslperf ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/sslperf install;
+	if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/bin/sslperf | grep libssl ; then exit 1; else exit 0;fi;
+	mv ${TARGET_ROOTFS_DIR}/bin/sslperf ${TARGET_ROOTFS_DIR}/bin/sslperf.openssl.sw -v;
+	
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} USE_CAVIUM_ENGINE=y -C software/apps/sslperf clean;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} USE_CAVIUM_ENGINE=y -C software/apps/sslperf ;
+	make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} USE_CAVIUM_ENGINE=y -C software/apps/sslperf install;
+	if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/bin/sslperf | grep libssl ; then exit 1; else exit 0;fi;
+	mv ${TARGET_ROOTFS_DIR}/bin/sslperf ${TARGET_ROOTFS_DIR}/bin/sslperf.openssl.hw -v;
+	
+	#make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/thin_apps clean;
+	#make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/thin_apps ;
+	#make -f auto.makefile ${PARAM_TO_DRV_AUTOMAKEFILE} -C software/apps/thin_apps install;
+	#if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/bin/thin_server | grep libssl ; then exit 1; else exit 0;fi;
+	#if arm-linux-objdump -x ${TARGET_ROOTFS_DIR}/bin/thin_client | grep libssl ; then exit 1; else exit 0;fi;
+	#mv ${TARGET_ROOTFS_DIR}/bin/thin_server ${TARGET_ROOTFS_DIR}/bin/thin_server.openssl -v;
+	#mv ${TARGET_ROOTFS_DIR}/bin/thin_client ${TARGET_ROOTFS_DIR}/bin/thin_client.openssl -v;
+	
+	mv ${TARGET_ROOTFS_DIR}/usr/local/ssl ${TARGET_ROOTFS_DIR}/usr/local/openssl -v;
+	
+
+info:
+	@echo ==================
+	@echo MYPATH=${MYPATH}
+	@echo MYNAME=${MYNAME}
+	@echo PWD=${PWD}
+	@echo TARGET_ROOTFS_DIR=${TARGET_ROOTFS_DIR}
+	@echo KERNEL=${KERNEL}
+	@echo ==================
+
+
