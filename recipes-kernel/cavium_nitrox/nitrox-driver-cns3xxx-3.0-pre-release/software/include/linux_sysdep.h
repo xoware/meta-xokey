@@ -63,6 +63,7 @@
 
 #ifdef __KERNEL__
 #include <linux/types.h>
+#include <linux/sched.h>
 #ifdef DMA_DYN_MAP
 #include <linux/pci.h>
 #endif
