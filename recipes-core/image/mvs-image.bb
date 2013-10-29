@@ -22,18 +22,18 @@ MVS_PKGS += "mtd-utils"
 MVS_PKGS += "mtd-utils-ubifs"
 MVS_PKGS += "mtd-utils-jffs2"
 MVS_PKGS += "mtd-utils-misc"
-MVS_PKGS += "openssl openssl-engines"
-MVS_PKGS += "openvpn"
+#MVS_PKGS += "openssl openssl-engines"
+#MVS_PKGS += "openvpn"
 MVS_PKGS += "iptables"
-MVS_PKGS += "cryptodev"
+#MVS_PKGS += "cryptodev"
 MVS_PKGS += "af-alg-engine"
-
+MVS_PKGS += "cavium-nitrox"
 
 #Tools for now for debug/testing, remove for production
 MVS_PKGS += "tcpdump"
 MVS_PKGS += "strace"
 MVS_PKGS += "socat"
-MVS_PKGS += "cryptodev-tests"
+#MVS_PKGS += "cryptodev-tests"
 
 MVS_PKGS += "libnl-route libnl-genl"
 
