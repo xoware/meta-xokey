@@ -8,7 +8,9 @@ RCONFLICTS_${PN} = "ocf-linux"
 inherit module
 
 PR = "r1"
+
 DEPENDS += "openssl"
+DEPENDS += "virtual/kernel"
 
 SRCREV = "3b2fb637bfe83845b09d338cf57b45176828358e"
 
@@ -16,7 +18,7 @@ SRC_URI = "git://github.com/nmav/cryptodev-linux.git;protocol=git "
 #           file://makefile_fixup.patch 
 #          file://Add-the-compile-and-install-rules-for-cryptodev-test.patch"
 
-EXTRA_OEMAKE='KERNEL_DIR="${STAGING_KERNEL_DIR}" PREFIX="${D}"'
+EXTRA_OEMAKE='KERNEL_DIR="${STAGING_KERNEL_DIR}" PATCH_UPNAS=n PREFIX="${D}"'
 
 S = "${WORKDIR}/git"
 python () {
@@ -37,6 +39,7 @@ python () {
 	if 'arch' in error_qa:
 		d.setVar('ERROR_QA', error_qa.replace(' arch', ''))
 }
+
 
 do_compile_append() {
 #        oe_runmake -C tests testprogs

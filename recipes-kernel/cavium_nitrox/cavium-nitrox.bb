@@ -67,12 +67,17 @@ do_install() {
 	install -d ${D}/nitrox
 	install -d ${D}/nitrox/microcode
 	install -d ${D}/nitrox/bin
+	install -d ${D}/usr/
+	install -d ${D}/usr/bin/
 	#microcode binaries
 	install -m 755 ${THISDIR}/apps-pool/nitrox-driver-cns3xxx-3.0-pre-release/software/microcode/*.out ${D}/nitrox/microcode
 	install -m 755 ${THISDIR}/apps-pool/nitrox-driver-cns3xxx-3.0-pre-release/software/driver/linux/pkp_drv.ko ${D}/nitrox/
 	install -m 755 ${THISDIR}/apps-pool/nitrox-driver-cns3xxx-3.0-pre-release/software/utils/csp1_init ${D}/nitrox/bin
 	install -m 755 ${THISDIR}/apps-pool/nitrox-driver-cns3xxx-3.0-pre-release/software/utils/test_* ${D}/nitrox/bin
 	install -m 755 ${THISDIR}/apps-pool/nitrox-driver-cns3xxx-3.0-pre-release/software/bin/pots.* ${D}/nitrox/bin
+	
+	install -m 755 ${THISDIR}/apps-pool/nitrox-driver-cns3xxx-3.0-pre-release/software/apps/TurboSSL-0.9.8j/apps/openssl ${D}/usr/bin
+
 }
 
 addtask do_cleansrc before do_cleansrc
