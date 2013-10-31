@@ -6,9 +6,9 @@ Build procedure:
 1. Clone yocto/poky git repository
 git clone git://git.yoctoproject.org/poky
 
-2. Checkout dylan-9.0.1 tag
+2. Checkout dylan-9.0.2 tag
 cd poky
-git checkout dylan-9.0.1 -b my_branch
+git checkout dylan-9.0.2 -b my_branch
 
 3. Clone meta-atmel layer
 git clone http://github.com/linux4sam/meta-atmel
@@ -17,11 +17,11 @@ git clone http://github.com/linux4sam/meta-atmel
 git clone git@github.com:xoware/meta-xokey.git
 
 5. Initialize build directory
-source oe-init-build-env
+source oe-init-build-env build_ek
 
 
 6. Add meta-atmel, meta-exokey layers to bblayer configuration file
-vim conf/bblayers.conf:
+vim conf/bblayers.conf
 
 # LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
 # changes incompatibly
@@ -31,20 +31,24 @@ BBPATH = "${TOPDIR}"
 BBFILES ?= ""
 
 BBLAYERS ?= " \
-  /home/karl/workspace/meta-exokey \
+  /home/karl/workspace/meta-xokey \
   /home/karl/workspace/meta-atmel \
   /home/karl/workspace/meta \
   /home/karl/workspace/meta-yocto \
   /home/karl/workspace/meta-yocto-bsp \
   "
 7. Edit local.conf to specify the machine, location of source archived, package type (rpm, deb or ipk)
-vim conf/local.conf:
+vim conf/local.conf
+
 [...]
 MACHINE ??= "exokey"
 [...]
 DL_DIR ?= "your_download_directory_path"
 [...]
-PACKAGE_CLASSES ?= "package_ipk package_tar"
+PACKAGE_CLASSES ?= "package_ipk"
+
+set BB_NUMBER_THREADS, PARALLEL_MAKE as you like for your PC
+
 
 8. Build exokey image
 bitbake -v exokey-image
