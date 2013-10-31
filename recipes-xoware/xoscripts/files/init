@@ -136,7 +136,7 @@ check_fw_upgrade () {
 }
 
 mount_rootfs_squashfs_ubi () {
-	echo "checking rootfs"
+	echo "checking squash rootfs"
 	if grep '"rootfs"' /proc/mtd > /dev/null 2>&1; then
 		echo "rootfs found"
 		ROOTFS_MTD=`grep '"rootfs"' /proc/mtd |cut -d ':' -f1 |sed -e 's/mtd//'`
