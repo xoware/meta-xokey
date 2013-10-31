@@ -33,19 +33,25 @@ warn_msg() {
 }
 
 rescue_shell() {
-    echo "Dropping you to a rescue shell."
+    echo "bbinstall"
     /bin/busybox --install -s
+    echo "Dropping you to a rescue shell."
     exec /bin/sh
+    # 1. make ourself session leader,
+    # 2. open /dev/tty1 and thus acquire a ctty,
+    # 3. re-execute the shell, allowing it to notice that it has a ctty:
+    #exec setsid sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
 }
 
 remote_rescue_shell() {
+    echo "Setting IP 10.64.1.8 up"
     # Bring up network interface
     ifconfig eth0 10.64.1.8 up
 
     # telnetd requires devpts
     mkdir -p /dev/pts
     mount -t devpts none /dev/pts
-
+    echo "Start telnet server"
     # Start the telnet server
     telnetd -l /bin/sh
 
@@ -140,8 +146,19 @@ mount_rootfs_squashfs_ubi () {
 			REAL_ROOT="/mnt/root"
 			mount_real_root
 		else 
-			bad_msg "Flash Mounting failed."
-			remote_rescue_shell
+			bad_msg "Flash Mounting MTD $ROOTFS_MTD failed."
+			echo "/proc/mounts:"
+			cat /proc/mounts
+			echo "/proc/mtd:"
+			cat /proc/mtd
+			echo "/dev:"
+			ubinfo -a
+			ls -la /dev
+			mkdir -p /dev/pts
+			mount -t devpts none /dev/pts
+
+			#remote_rescue_shell
+			rescue_shell
 		fi
 		
 	fi
