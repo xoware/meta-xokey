@@ -56,13 +56,16 @@ do_rootfs_append () {
 	gen_firmware.sh ${DEPLOY_DIR_IMAGE} ${EK_VERSION}
 	ln -sf EK_Firmware_${EK_VERSION}.bin ${DEPLOY_DIR_IMAGE}/EK_Firmware.bin
 	
-
+	SQUASH_SIZE=`stat -c %s ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs`
+	echo "Squash size = ${SQUASH_SIZE}"
 	echo \[ubifs\] > ubinize.cfg 
 	echo mode=ubi >> ubinize.cfg
 	echo image=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs >> ubinize.cfg 
 	echo vol_id=0 >> ubinize.cfg 
 	echo vol_type=dynamic >> ubinize.cfg 
 	echo vol_name=rootfs >> ubinize.cfg 
+	echo vol_size=${SQUASH_SIZE} >> ubinize.cfg 
+#NOTE do NOT specify autoresize or it will take up the whole device
 #	echo vol_flags=autoresize >> ubinize.cfg
 	ubinize -o ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.ubi ${UBINIZE_ARGS} ubinize.cfg
 	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
