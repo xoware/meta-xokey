@@ -1,7 +1,7 @@
 DESCRIPTION = "Daemon to handle device specifc features."
 SECTION = "base"
 LICENSE = "CLOSED"
-DEPENDS = "libmicrohttpd libnl jansson file"
+DEPENDS = "libgcrypt gnutls curl libmicrohttpd libnl jansson file"
 
 SRCREV = "HEAD"
 #SRCREV_ = "${AUTOREV}"
@@ -9,6 +9,8 @@ SRCREV = "HEAD"
 PR = "r0"
 
 inherit autotools pkgconfig 
+
+EXTRA_OECONF="--enable-exokey"
 
 SRC_URI = "git://github.com/xoware/xokd.git;branch=master;protocol=ssh;user=git"
 S = "${WORKDIR}/git"
