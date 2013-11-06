@@ -32,6 +32,7 @@ EXOKEY_PKGS += "af-alg-engine"
 #Tools for now for debug/testing, remove for production
 EXOKEY_PKGS += "tcpdump"
 EXOKEY_PKGS += "strace"
+EXOKEY_PKGS += "iperf"
 EXOKEY_PKGS += "socat"
 EXOKEY_PKGS += "cryptodev-tests"
 
