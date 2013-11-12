@@ -43,6 +43,6 @@ do_install () {
 	install -m 0755 ${WORKDIR}/openvpn.down.sh ${D}${sysconfdir}/openvpn/
 	install -m 0444 ${WORKDIR}/openssl.cnf ${D}/usr/lib/ssl/openssl.cnf
 	ln -sf  syslog.busybox ${D}/etc/init.d/S00syslog
-	echo 1.0.`date +%Y%m%d%H%M` > ${D}/etc/EK_VERSION
+	echo 1.0.`date +%Y%m%d%H%M` > ${D}/etc/XO_VERSION
 
 }

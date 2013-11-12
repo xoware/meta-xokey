@@ -40,7 +40,7 @@ rescue_shell() {
     # 1. make ourself session leader,
     # 2. open /dev/tty1 and thus acquire a ctty,
     # 3. re-execute the shell, allowing it to notice that it has a ctty:
-    #exec setsid sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
+    exec setsid sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
 }
 
 remote_rescue_shell() {

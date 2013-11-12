@@ -27,5 +27,5 @@ IMAGE_FSTYPES = "cpio cpio.gz"
 
 do_rootfs_append () {
 	
-#	echo "EK_VERSION = $EK_VERSION"
+#	echo "XO_VERSION = $XO_VERSION"
 }
