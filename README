@@ -54,7 +54,7 @@ set BB_NUMBER_THREADS, PARALLEL_MAKE as you like for your PC
 bitbake -v exokey-image
 
   This will build and produce output in build/tmp/deploy/images:
-  A) firmware image in build/tmp/deploy/images/firmware*.img   This is the image used in the UI
+  A) firmware image in build/tmp/deploy/images/EK_firmware*.img   This is the image used in the UI
   This currently contains the Kernel and UBI squashfs/rootfs  volume.   At a later date we may decide to include  uboot or DTB files in this firmware image
 
   B) uImage Kernel image including initramfs   This can be programmed in uboot console with nand write, or linux console with nandwrite command

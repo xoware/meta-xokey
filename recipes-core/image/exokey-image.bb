@@ -3,7 +3,7 @@ DESCRIPTION = "A small image just capable of allowing a device to boot."
 IMAGE_LINGUAS = " "
 
 LICENSE = "MIT"
-DEPENDS = "ek-firmware-native"
+DEPENDS = "ek-firmware-native xomkimage-native"
 
 inherit core-image deploy
 
@@ -54,8 +54,8 @@ INITRAMFS_FSTYPES = "cpio.gz"
 do_rootfs_append () {
 	XO_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/XO_VERSION`
 	echo "XO_VERSION = $XO_VERSION"
-	gen_firmware.sh ${DEPLOY_DIR_IMAGE} ${XO_VERSION}
-	ln -sf EK_Firmware_${XO_VERSION}.bin ${DEPLOY_DIR_IMAGE}/EK_Firmware.bin
+#	gen_firmware.sh ${DEPLOY_DIR_IMAGE} ${XO_VERSION}
+#	ln -sf EK_Firmware_${XO_VERSION}.bin ${DEPLOY_DIR_IMAGE}/EK_Firmware.bin
 	
 	SQUASH_SIZE=`stat -c %s ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs`
 	echo "Squash size = ${SQUASH_SIZE}"
@@ -72,6 +72,6 @@ do_rootfs_append () {
 	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
 	
 	#generate firmware image for update in linux UI
-	xomkimage ${DEPLOY_DIR_IMAGE}/uImage:mtd:5:0:kernel  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs:ubivol:0:0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/firmware_${XO_VERSION}.img
-	ln -sf ${DEPLOY_DIR_IMAGE}/firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/firmware.img
+	xomkimage ${DEPLOY_DIR_IMAGE}/uImage:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
 }
