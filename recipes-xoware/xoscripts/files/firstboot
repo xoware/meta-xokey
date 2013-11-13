@@ -10,3 +10,4 @@ mount |grep xokcfg && {
 
 flash_erase -j /dev/mtd6 0 0
 mount -t jffs2 /dev/mtdblock6  /xokcfg/
+check_ssl.sh
