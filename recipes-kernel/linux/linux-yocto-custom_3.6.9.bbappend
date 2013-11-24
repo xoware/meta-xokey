@@ -7,7 +7,7 @@ INITRAMFS_IMAGE = "exokey-initramfs"
 
 
 # path to get defconfig from
-FILESEXTRAPATHS_prepend := "${THISDIR}/linux-3.6" 
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-3.6:" 
 
 LINUX_KERNEL_TYPE ?= "standard"
 LINUX_VERSION_EXTENSION = "-xoware"
