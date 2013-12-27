@@ -9,6 +9,8 @@ mount -t devpts devpts /dev/pts
 #mount -t tmpfs tmpfs -osize=16M /tmp/
 echo "/sbin/mdev" > /proc/sys/kernel/hotplug
 mdev -s
+mkdir -p /var/volatile/run /var/volatile/log
 
 #mount --bind  /tmp/ /var/volatile/
 #mkdir -p /tmp/tmp /tmp/lock /tmp/run /tmp/log
+
