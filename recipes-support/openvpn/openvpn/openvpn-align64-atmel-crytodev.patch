@@ -1,0 +1,209 @@
+diff --git a/src/openvpn/buffer.c b/src/openvpn/buffer.c
+index 56d14b1..0bdc530 100644
+--- a/src/openvpn/buffer.c
++++ b/src/openvpn/buffer.c
+@@ -71,7 +71,9 @@ alloc_buf (size_t size)
+ #ifdef DMALLOC
+   buf.data = openvpn_dmalloc (file, line, size);
+ #else
+-  buf.data = calloc (1, size);
++  //buf.data = calloc (1, size);
++  buf.data = memalign(OVPN_ALIGN_SIZE, size);
++  memset(buf.data, 0, size);
+ #endif
+   check_malloc_return(buf.data);
+ 
+diff --git a/src/openvpn/buffer.h b/src/openvpn/buffer.h
+index 93efb09..bd0e742 100644
+--- a/src/openvpn/buffer.h
++++ b/src/openvpn/buffer.h
+@@ -35,6 +35,15 @@
+  * it will be a noop.
+  */
+ /* #define VERIFY_ALIGNMENT */
++#define IS_ALIGNED(x, a)                (((x) & ((typeof(x))(a) - 1)) == 0)
++#define OVPN_ALIGN_SIZE 16
++#define OVPN_ALIGN_MASK 0xF
++#define ALIGN_PADDING_HEADER_SIZE 1
++#define FIX_ALIGN_SIZE(s) (s + OVPN_ALIGN_MASK) &  (~OVPN_ALIGN_MASK)
++
++#define malloc(x) memalign(OVPN_ALIGN_SIZE,x)
++
++
+ 
+ /*
+  * Keep track of source file/line of buf_init calls
+@@ -89,6 +98,7 @@ struct gc_entry
+ {
+   struct gc_entry *next;        /**< Pointer to the next item in the
+                                  *   linked list. */
++  char padding[OVPN_ALIGN_SIZE - sizeof(struct gc_entry *)]; // padding to keep buffers a multiple of align size
+ };
+ 
+ 
+diff --git a/src/openvpn/crypto.c b/src/openvpn/crypto.c
+index d9adf5b..bb47ab0 100644
+--- a/src/openvpn/crypto.c
++++ b/src/openvpn/crypto.c
+@@ -102,6 +102,8 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+ 	  const int iv_size = cipher_ctx_iv_length (ctx->cipher);
+ 	  const unsigned int mode = cipher_ctx_mode (ctx->cipher);
+ 	  int outlen;
++	  uint8_t padding_needed;
++	  uint8_t *align_padding_header;
+ 
+ 	  if (mode == OPENVPN_MODE_CBC)
+ 	    {
+@@ -138,7 +140,7 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+ 	    }
+ 
+ 	  /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
+-	  ASSERT (buf_init (&work, FRAME_HEADROOM (frame)));
++	  ASSERT (buf_init (&work, FIX_ALIGN_SIZE(FRAME_HEADROOM (frame))));
+ 
+ 	  /* set the IV pseudo-randomly */
+ 	  if (opt->flags & CO_USE_IV)
+@@ -150,6 +152,14 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+ 	  /* cipher_ctx was already initialized with key & keylen */
+ 	  ASSERT (cipher_ctx_reset(ctx->cipher, iv_buf));
+ 
++	  padding_needed =  ((unsigned long) BPTR (buf) & OVPN_ALIGN_MASK);
++	  if (!padding_needed)
++		padding_needed = OVPN_ALIGN_SIZE;
++	  buf_prepend(buf, padding_needed - ALIGN_PADDING_HEADER_SIZE);  // padding needed
++	  align_padding_header = buf_prepend(buf, ALIGN_PADDING_HEADER_SIZE); // prepend space for header
++	  *align_padding_header  = padding_needed;  // assign value of padded space
++
++  
+ 	  /* Buffer overflow check */
+ 	  if (!buf_safe (&work, buf->len + cipher_ctx_block_size(ctx->cipher)))
+ 	    {
+@@ -164,6 +174,19 @@ openvpn_encrypt (struct buffer *buf, struct buffer work,
+ 	      goto err;
+ 	    }
+ 
++	if (!IS_ALIGNED((unsigned long) BPTR (&work), 0xf)) {
++		  printf("%s:%d work data not aligned %p   size=%d, offset=%d, capacity=%d\n", __FUNCTION__, __LINE__,  BPTR (&work), BLEN (&work), work.offset, work.capacity);	
++		  abort();
++	  } 
++// 		else {
++// 			printf("%s:%d work data IS aligned %p   size=%d\n", __FUNCTION__, __LINE__,  BPTR (&work), BLEN (&work));
++// 		}
++		
++	  if (!IS_ALIGNED((unsigned long) BPTR (buf), 0xf)) {
++		  printf("%s:%d buffer data not aligned %p   size=%d, offset=%d, capacity=%d data_p=%p\n", __FUNCTION__, __LINE__,  BPTR (buf), BLEN (buf), buf->offset, buf->capacity, buf->data);	
++		  abort();
++	  } 
++	    
+ 	  /* Encrypt packet ID, payload */
+ 	  ASSERT (cipher_ctx_update (ctx->cipher, BPTR (&work), &outlen, BPTR (buf), BLEN (buf)));
+ 	  work.len += outlen;
+@@ -276,10 +299,16 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 	  const int iv_size = cipher_ctx_iv_length (ctx->cipher);
+ 	  uint8_t iv_buf[OPENVPN_MAX_IV_LENGTH];
+ 	  int outlen;
++	  int align_padding_header;
+ 
+ 	  /* initialize work buffer with FRAME_HEADROOM bytes of prepend capacity */
+-	  ASSERT (buf_init (&work, FRAME_HEADROOM_ADJ (frame, FRAME_HEADROOM_MARKER_DECRYPT)));
+-
++	  ASSERT (buf_init (&work, FIX_ALIGN_SIZE(FRAME_HEADROOM_ADJ (frame, FRAME_HEADROOM_MARKER_DECRYPT))));
++	  if (!IS_ALIGNED((unsigned long) BPTR (&work), 0xf)) {
++		  msg(D_CRYPT_ERRORS, "FRAME_HEADROOM=%d fixed=%d\n", FRAME_HEADROOM_ADJ (frame, FRAME_HEADROOM_MARKER_DECRYPT), 
++				 FIX_ALIGN_SIZE( FRAME_HEADROOM_ADJ (frame, FRAME_HEADROOM_MARKER_DECRYPT)) );
++		  msg(D_CRYPT_ERRORS, "%s:%d work data not aligned %p   size=%d, offset=%d, capacity=%d buffer.data=%p\n", __FUNCTION__, __LINE__,  BPTR (&work), BLEN (&work), work.offset, work.capacity, work.data);	
++		  abort();
++	  } 
+ 	  /* use IV if user requested it */
+ 	  CLEAR (iv_buf);
+ 	  if (opt->flags & CO_USE_IV)
+@@ -305,6 +334,15 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 	  if (!buf_safe (&work, buf->len))
+ 	    CRYPT_ERROR ("buffer overflow");
+ 
++	  if (!IS_ALIGNED((unsigned long) BPTR (buf), 0xf)) {
++		  printf("%s:%d buf data not aligned %p   size=%d, offset=%d, capacity=%d buffer.data=%p\n", __FUNCTION__, __LINE__,  BPTR (buf), BLEN (buf), buf->offset, buf->capacity, buf->data);	
++		  abort();
++	  } 	  
++	  if (!IS_ALIGNED((unsigned long) BPTR (&work), 0xf)) {
++		  printf("%s:%d work data not aligned %p   size=%d, offset=%d, capacity=%d buffer.data=%p\n", __FUNCTION__, __LINE__,  BPTR (&work), BLEN (&work), work.offset, work.capacity, work.data);	
++		  abort();
++	  }
++
+ 	  /* Decrypt packet ID, payload */
+ 	  if (!cipher_ctx_update (ctx->cipher, BPTR (&work), &outlen, BPTR (buf), BLEN (buf)))
+ 	    CRYPT_ERROR ("cipher update failed");
+@@ -315,8 +353,25 @@ openvpn_decrypt (struct buffer *buf, struct buffer work,
+ 	    CRYPT_ERROR ("cipher final failed");
+ 	  work.len += outlen;
+ 
++
+ 	  dmsg (D_PACKET_CONTENT, "DECRYPT TO: %s",
+ 	       format_hex (BPTR (&work), BLEN (&work), 80, &gc));
++  
++	  align_padding_header = buf_read_u8(&work);
++	  
++	  if (align_padding_header) {
++	    
++		  if (align_padding_header > OVPN_ALIGN_SIZE) {
++			printf("Error invalid padding %d \n", align_padding_header);
++			//abort();
++			goto error_exit;
++		  }
++	    
++		  buf_advance(&work, align_padding_header-1);
++
++		  dmsg (D_PACKET_CONTENT, "DECRYPT minus padding TO: %s",
++				format_hex (BPTR (&work), BLEN (&work), 80, &gc));
++	  }
+ 
+ 	  /* Get packet ID from plaintext buffer or IV, depending on cipher mode */
+ 	  {
+@@ -694,7 +749,7 @@ test_crypto (const struct crypto_options *co, struct frame* frame)
+   struct buffer buf = clear_buf();
+ 
+   /* init work */
+-  ASSERT (buf_init (&work, FRAME_HEADROOM (frame)));
++  ASSERT (buf_init (&work, FIX_ALIGN_SIZE(FRAME_HEADROOM (frame))));
+ 
+   msg (M_INFO, "Entering " PACKAGE_NAME " crypto self-test mode.");
+   for (i = 1; i <= TUN_MTU_SIZE (frame); ++i)
+diff --git a/src/openvpn/crypto_openssl.c b/src/openvpn/crypto_openssl.c
+index 1501bc8..7765684 100644
+--- a/src/openvpn/crypto_openssl.c
++++ b/src/openvpn/crypto_openssl.c
+@@ -599,6 +599,21 @@ int
+ cipher_ctx_update (EVP_CIPHER_CTX *ctx, uint8_t *dst, int *dst_len,
+     uint8_t *src, int src_len)
+ {
++#if 0
++	const char *msg = NULL;
++	if (IS_ALIGNED((unsigned long) src, 0xf)) {
++		msg = "src aligned\n";
++		if (IS_ALIGNED((unsigned long) dst, 0xf)) {
++		    msg = "dst aligned\n";
++		} else {
++		    msg = "dst is NOT ALIGNED\n";
++		}
++	} else {
++	  msg = "src is NOT ALIGNED\n";
++	}
++
++    printf("%s:%d encrypt=%d dst=%p dst_len=%d src=%p src_len=%d : %s\n", __FUNCTION__, __LINE__, ctx->encrypt, dst, *dst_len, src, src_len, msg);
++#endif
+   return EVP_CipherUpdate_ov (ctx, dst, dst_len, src, src_len);
+ }
+ 
+diff --git a/src/openvpn/mtu.h b/src/openvpn/mtu.h
+index 29ec21f..8cba4a5 100644
+--- a/src/openvpn/mtu.h
++++ b/src/openvpn/mtu.h
+@@ -84,7 +84,7 @@
+  * Alignment of payload data such as IP packet or
+  * ethernet frame.
+  */
+-#define PAYLOAD_ALIGN 4
++#define PAYLOAD_ALIGN 16
+ 
+ 
+ /**************************************************************************/
