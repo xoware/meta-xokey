@@ -1,6 +1,6 @@
 diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/crypto/engine/eng_cryptodev.c
 --- openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c	2013-02-11 16:26:04.000000000 +0100
-+++ openssl-1.0.1e/crypto/engine/eng_cryptodev.c	2013-10-18 14:59:31.467557013 +0200
++++ openssl-1.0.1e/crypto/engine/eng_cryptodev.c	2013-12-02 13:04:01.876027979 +0100
 @@ -2,6 +2,7 @@
   * Copyright (c) 2002 Bob Beck <beck@openbsd.org>
   * Copyright (c) 2002 Theo de Raadt
@@ -101,7 +101,15 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  		if (!ctx->encrypt) {
  			iiv = in + inl - ctx->cipher->iv_len;
  			memcpy(save_iv, iiv, ctx->cipher->iv_len);
-@@ -440,7 +447,7 @@
+@@ -398,6 +405,7 @@
+ 		cryp.iv = NULL;
+ 
+ 	if (ioctl(state->d_fd, CIOCCRYPT, &cryp) == -1) {
++		printf("%s:%d ioctl(CIOCCRYPT) failed %d, %m \n", errno);
+ 		/* XXX need better errror handling
+ 		 * this can fail for a number of different reasons.
+ 		 */
+@@ -440,7 +448,7 @@
  	if ((state->d_fd = get_dev_crypto()) < 0)
  		return (0);
  
@@ -110,7 +118,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	sess->keylen = ctx->key_len;
  	sess->cipher = cipher;
  
-@@ -660,18 +667,6 @@
+@@ -660,18 +668,6 @@
  }
  
  
@@ -129,7 +137,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  static int cryptodev_digest_init(EVP_MD_CTX *ctx)
  {
  	struct dev_crypto_state *state = ctx->md_data;
-@@ -682,7 +677,6 @@
+@@ -682,7 +678,6 @@
  		printf("cryptodev_digest_init: Can't get digest \n");
  		return (0);
  	}
@@ -137,7 +145,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	memset(state, 0, sizeof(struct dev_crypto_state));
  
  	if ((state->d_fd = get_dev_crypto()) < 0) {
-@@ -690,8 +684,8 @@
+@@ -690,8 +685,8 @@
  		return (0);
  	}
  
@@ -148,7 +156,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	sess->mac = digest;
  
  	if (ioctl(state->d_fd, CIOCGSESSION, sess) < 0) {
-@@ -707,8 +701,8 @@
+@@ -707,8 +702,8 @@
  static int cryptodev_digest_update(EVP_MD_CTX *ctx, const void *data,
  		size_t count)
  {
@@ -158,7 +166,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	struct session_op *sess = &state->d_sess;
  
  	if (!data || state->d_fd < 0) {
-@@ -717,7 +711,7 @@
+@@ -717,7 +712,7 @@
  	}
  
  	if (!count) {
@@ -167,7 +175,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	}
  
  	if (!(ctx->flags & EVP_MD_CTX_FLAG_ONESHOT)) {
-@@ -740,9 +734,9 @@
+@@ -740,9 +735,9 @@
  	cryp.ses = sess->ses;
  	cryp.flags = 0;
  	cryp.len = count;
@@ -179,7 +187,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	if (ioctl(state->d_fd, CIOCCRYPT, &cryp) < 0) {
  		printf("cryptodev_digest_update: digest failed\n");
  		return (0);
-@@ -757,8 +751,6 @@
+@@ -757,8 +752,6 @@
  	struct dev_crypto_state *state = ctx->md_data;
  	struct session_op *sess = &state->d_sess;
  
@@ -188,7 +196,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	if (!md || state->d_fd < 0) {
  		printf("cryptodev_digest_final: illegal input\n");
  		return(0);
-@@ -772,7 +764,7 @@
+@@ -772,7 +765,7 @@
  		cryp.len = state->mac_len;
  		cryp.src = state->mac_data;
  		cryp.dst = NULL;
@@ -197,7 +205,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  		if (ioctl(state->d_fd, CIOCCRYPT, &cryp) < 0) {
  			printf("cryptodev_digest_final: digest failed\n");
  			return (0);
-@@ -783,7 +775,7 @@
+@@ -783,7 +776,7 @@
  
  	memcpy(md, state->digest_res, ctx->digest->md_size);
  
@@ -206,7 +214,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  }
  
  
-@@ -835,8 +827,8 @@
+@@ -835,8 +828,8 @@
  
  	digest = digest_nid_to_cryptodev(to->digest->type);
  
@@ -217,7 +225,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	sess->mac = digest;
  
  	dstate->d_fd = get_dev_crypto();
-@@ -861,34 +853,117 @@
+@@ -861,34 +854,117 @@
  }
  
  
@@ -343,7 +351,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  };
  
  #endif /* USE_CRYPTODEV_DIGESTS */
-@@ -909,6 +984,18 @@
+@@ -909,6 +985,18 @@
  	case NID_sha1:
  		*digest = &cryptodev_sha1;
   		break;
@@ -362,7 +370,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	default:
  #endif /* USE_CRYPTODEV_DIGESTS */
  		*digest = NULL;
-@@ -940,7 +1027,7 @@
+@@ -940,7 +1028,7 @@
  		return (1);
  	memset(b, 0, bytes);
  
@@ -371,7 +379,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	crp->crp_nbits = bits;
  
  	for (i = 0, j = 0; i < a->top; i++) {
-@@ -1193,7 +1280,7 @@
+@@ -1193,7 +1281,7 @@
  	kop.crk_op = CRK_DSA_SIGN;
  
  	/* inputs: dgst dsa->p dsa->q dsa->g dsa->priv_key */
@@ -380,7 +388,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	kop.crk_param[0].crp_nbits = dlen * 8;
  	if (bn2crparam(dsa->p, &kop.crk_param[1]))
  		goto err;
-@@ -1233,7 +1320,7 @@
+@@ -1233,7 +1321,7 @@
  	kop.crk_op = CRK_DSA_VERIFY;
  
  	/* inputs: dgst dsa->p dsa->q dsa->g dsa->pub_key sig->r sig->s */
@@ -389,7 +397,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  	kop.crk_param[0].crp_nbits = dlen * 8;
  	if (bn2crparam(dsa->p, &kop.crk_param[1]))
  		goto err;
-@@ -1311,9 +1398,10 @@
+@@ -1311,9 +1399,10 @@
  		goto err;
  	kop.crk_iparams = 3;
  
@@ -402,7 +410,7 @@ diff -Naur openssl-1.0.1e-orig/crypto/engine/eng_cryptodev.c openssl-1.0.1e/cryp
  
  	if (ioctl(fd, CIOCKEY, &kop) == -1) {
  		const DH_METHOD *meth = DH_OpenSSL();
-@@ -1385,7 +1473,7 @@
+@@ -1385,7 +1474,7 @@
  	put_dev_crypto(fd);
  
  	if (!ENGINE_set_id(engine, "cryptodev") ||
