@@ -10,7 +10,7 @@ inherit module
 PR = "r1"
 DEPENDS += "openssl"
 
-SRCREV = "3b2fb637bfe83845b09d338cf57b45176828358e"
+SRCREV = "b2515316c44c8fb51751ac0308d544b36358e48e"
 
 SRC_URI = "git://github.com/nmav/cryptodev-linux.git;protocol=git "
 #           file://makefile_fixup.patch 
