@@ -1,0 +1,61 @@
+From 0fadfb87443b751e3847996012ce02630c986abf Mon Sep 17 00:00:00 2001
+From: Leilei Zhao <leilei.zhao@atmel.com>
+Date: Mon, 30 Dec 2013 17:06:03 +0800
+Subject: [PATCH] dma: at91: avoid possible deadlock in atc_tx_status
+
+Move the atc_control which results in deadlock from inside of atc_get_bytes_left to outside to avoid netsed lock.
+
+Signed-off-by: Leilei Zhao <leilei.zhao@atmel.com>
+---
+ drivers/dma/at_hdmac.c |   14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/dma/at_hdmac.c b/drivers/dma/at_hdmac.c
+index f2898d4..94085bc 100644
+--- a/drivers/dma/at_hdmac.c
++++ b/drivers/dma/at_hdmac.c
+@@ -287,9 +287,6 @@ static int atc_get_bytes_left(struct dma_chan *chan)
+ 		atchan->remain_desc = desc_first->len;
+ 
+ start:
+-	/* Channel should be paused before get residue */
+-	if (!atc_chan_is_paused(atchan))
+-		atc_control(chan, DMA_PAUSE, 0);
+ 	/*
+ 	 * This happens when current descriptor transfer complete.
+ 	 * The residual buffer size should reduce current descriptor length.
+@@ -331,9 +328,6 @@ start:
+ 		}
+ 	}
+ out:
+-	if (atc_chan_is_paused(atchan))
+-		atc_control(chan, DMA_RESUME, 0);
+-
+ 	return ret;
+ }
+ 
+@@ -1157,6 +1151,10 @@ atc_tx_status(struct dma_chan *chan,
+ 	if (!txstate)
+ 		return DMA_ERROR;
+ 
++	/* Channel should be paused before get residue */
++	if (!atc_chan_is_paused(atchan))
++		atc_control(chan, DMA_PAUSE, 0);
++
+ 	spin_lock_irqsave(&atchan->lock, flags);
+ 
+ 	/*  Get number of bytes left in the active transactions */
+@@ -1164,6 +1162,10 @@ atc_tx_status(struct dma_chan *chan,
+ 
+ 	spin_unlock_irqrestore(&atchan->lock, flags);
+ 
++	/* Channel should be resumed after get residue */
++	if (atc_chan_is_paused(atchan))
++		atc_control(chan, DMA_RESUME, 0);
++
+ 	if (unlikely(bytes < 0)) {
+ 		dev_vdbg(chan2dev(chan), "get residual bytes error\n");
+ 		return DMA_ERROR;
+-- 
+1.7.9.5
+

@@ -9,6 +9,12 @@ INITRAMFS_IMAGE = "exokey-initramfs"
 # path to get defconfig from
 FILESEXTRAPATHS_prepend := "${THISDIR}/linux-3.6:" 
 
+SRC_URI += "file://0001-dma-at91-avoid-possible-deadlock-in-atc_tx_status.patch \ 
+	file://0001-crypto-scatterwalk-Set-the-chain-pointer-indication-.patch \
+	file://0001-crypto-scatterwalk-Use-sg_chain_ptr-on-chain-entries.patch \
+	file://0001-cryto-atmel-sha-add-HMAC-ahash_alg.patch "
+
+
 LINUX_KERNEL_TYPE ?= "standard"
 LINUX_VERSION_EXTENSION = "-xoware"
 
