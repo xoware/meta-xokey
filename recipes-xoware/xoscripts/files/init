@@ -154,6 +154,7 @@ mount_rootfs_squashfs_ubi () {
 			echo "/dev:"
 			ubinfo -a
 			ls -la /dev
+			hexdump -n 64 -C $ROOTFS_MTD
 			mkdir -p /dev/pts
 			mount -t devpts none /dev/pts
 
