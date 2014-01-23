@@ -25,19 +25,20 @@ EXOKEY_PKGS += "mtd-utils-misc"
 EXOKEY_PKGS += "openssl openssl-engines"
 EXOKEY_PKGS += "openvpn"
 EXOKEY_PKGS += "iptables"
-EXOKEY_PKGS += "cryptodev"
+#EXOKEY_PKGS += "cryptodev"
 EXOKEY_PKGS += "af-alg-engine"
-
+EXOKEY_PKGS += "strongswan strongswan-plugins"
+EXOKEY_PKGS += "iproute2"
 
 #Tools for now for debug/testing, remove for production
 EXOKEY_PKGS += "tcpdump"
 EXOKEY_PKGS += "strace"
 EXOKEY_PKGS += "iperf"
 EXOKEY_PKGS += "socat"
-EXOKEY_PKGS += "cryptodev-tests"
-
+#EXOKEY_PKGS += "cryptodev-tests"
+#EXOKEY_PKGS += "gdb"
 EXOKEY_PKGS += "libnl-route libnl-genl"
-
+#EXOKEY_PKGS += "oprofile"
 
 #install all kernel modules
 EXOKEY_PKGS += "kernel-modules"
