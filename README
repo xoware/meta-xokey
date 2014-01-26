@@ -74,3 +74,9 @@ bitbake -v exokey-image
 	setenv bootcmd 'nand read 0x21000000 0x00180000 0x00006000;nand read 0x22000000 0x00200000 0x600000;bootm 0x22000000 - 0x21000000'
 	setenv ethaddr '00:36:65:ba:6f:be'
 	setenv serial '20131127-123-456'
+
+
+--
+Appendix A:   NFS boot on eval board:
+
+setenv bootargs 'console=ttyS0,115200 mtdparts=atmel_nand:256K(bs)ro,512K(ub)ro,256K(env)ro,512K(env_r)ro,512K(dtb),6M(ker),8M(cfg),-(store) root=/dev/ram0 ubi.mtd=7 root=/dev/nfs nfsroot=10.64.1.2:/rootfs ip=10.64.1.8:10.64.1.2::255.0.0.0: debug'
