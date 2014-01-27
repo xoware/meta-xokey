@@ -34,3 +34,13 @@ INSANE_SKIP_${PN}-plugins = "staticdev"
 #RREPLACES_${PN} += "${PN}-systemd"
 #RCONFLICTS_${PN} += "${PN}-systemd"
 #SYSTEMD_SERVICE_${PN} = "${PN}.service"
+
+
+do_install_append() {
+    rm -f ${D}${sysconfdir}/ipsec.conf
+    rm -f ${D}${sysconfdir}/strongswan.conf
+    rm -rf ${D}${sysconfdir}/ipsec.d
+    ln -sf /tmp/ipsec.conf ${D}/etc/ipsec.conf
+    ln -sf /tmp/strongswan.conf ${D}/etc/strongswan.conf
+    ln -sf /tmp/ipsec.d ${D}/etc/ipsec.d
+}
