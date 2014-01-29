@@ -1,0 +1,13 @@
+diff --git a/arch/arm/boot/dts/at91sam9263ek.dts b/arch/arm/boot/dts/at91sam9263ek.dts
+index 46deb88..9cf3952 100644
+--- a/arch/arm/boot/dts/at91sam9263ek.dts
++++ b/arch/arm/boot/dts/at91sam9263ek.dts
+@@ -47,7 +47,7 @@
+ 			};
+ 
+ 			usb1: gadget@fff78000 {
+-				atmel,vbus-gpio = <&pioA 25 0>;
++/*				atmel,vbus-gpio = <&pioA 25 0>; */
+ 				status = "okay";
+ 			};
+ 
