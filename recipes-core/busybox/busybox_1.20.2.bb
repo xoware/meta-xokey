@@ -10,7 +10,6 @@ SRC_URI = "http://www.busybox.net/downloads/busybox-${PV}.tar.bz2;name=tarball \
            file://busybox-udhcpc-no_deconfig.patch \
            file://sys_resource.patch \
            file://wget_dl_dir_fix.patch \
-           file://find-touchscreen.sh \
            file://busybox-cron \
            file://busybox-httpd \
            file://busybox-udhcpd \
