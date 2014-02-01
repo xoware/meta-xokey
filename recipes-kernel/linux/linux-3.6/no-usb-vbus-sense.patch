@@ -11,3 +11,96 @@ index 46deb88..9cf3952 100644
  				status = "okay";
  			};
  
+diff --git a/arch/arm/boot/dts/sama5d3.dtsi b/arch/arm/boot/dts/sama5d3.dtsi
+index 4efc983..a921a56 100644
+--- a/arch/arm/boot/dts/sama5d3.dtsi
++++ b/arch/arm/boot/dts/sama5d3.dtsi
+@@ -347,7 +347,7 @@
+ 					trigger-value = <0x6>;
+ 				};
+ 			};
+-
++/*
+ 			tsadcc: tsadcc@f8018000 {
+ 				compatible = "atmel,at91sam9x5-tsadcc";
+ 				reg = <0xf8018000 0x4000>;
+@@ -359,7 +359,7 @@
+ 				atmel,ts_sample_hold_time = <0x0a>;
+ 				status = "disabled";
+ 			};
+-
++*/
+ 			i2c2: i2c@f801c000 {
+ 				compatible = "atmel,at91sam9x5-i2c";
+ 				reg = <0xf801c000 0x4000>;
+diff --git a/arch/arm/boot/dts/sama5d3mb.dtsi b/arch/arm/boot/dts/sama5d3mb.dtsi
+index 8730531..624894b 100644
+--- a/arch/arm/boot/dts/sama5d3mb.dtsi
++++ b/arch/arm/boot/dts/sama5d3mb.dtsi
+@@ -115,10 +115,11 @@
+ 							<4 29 0x0 0x0>; /* PE29 gpio */
+ 					};
+ 
+-					pinctrl_usba_vbus: usba_vbus {
+-						atmel,pins =
+-							<3 29 0x0 0x4>; /* PD29 GPIO with deglitch */
+-					};
++/*					pinctrl_usba_vbus: usba_vbus { */
++/*						atmel,pins = */
++/*							<3 29 0x0 0x4>; */ /* PD29 GPIO with deglitch */
++/*					}; */
++
+ 				};
+ 			};
+ 
+@@ -130,11 +131,10 @@
+ 				status = "okay";
+ 			};
+ 		};
+-
+ 		usb0: gadget@00500000 {
+-			atmel,vbus-gpio = <&pioD 29 0>;
++/*			atmel,vbus-gpio = <&pioD 29 0>;
+ 			pinctrl-names = "default";
+-			pinctrl-0 = <&pinctrl_usba_vbus>;
++			pinctrl-0 = <&pinctrl_usba_vbus>; */
+ 			status = "okay";
+ 		};
+ 
+diff --git a/drivers/usb/gadget/atmel_usba_udc.c b/drivers/usb/gadget/atmel_usba_udc.c
+index 87db333..b611b4f 100644
+--- a/drivers/usb/gadget/atmel_usba_udc.c
++++ b/drivers/usb/gadget/atmel_usba_udc.c
+@@ -7,6 +7,9 @@
+  * it under the terms of the GNU General Public License version 2 as
+  * published by the Free Software Foundation.
+  */
++
++#define DEBUG 1
++
+ #include <linux/clk.h>
+ #include <linux/module.h>
+ #include <linux/init.h>
+@@ -1811,8 +1814,12 @@ static int atmel_usba_start(struct usb_gadget *gadget,
+ 	DBG(DBG_GADGET, "registered driver `%s'\n", driver->driver.name);
+ 
+ 	udc->vbus_prev = 0;
+-	if (gpio_is_valid(udc->vbus_pin))
++	if (gpio_is_valid(udc->vbus_pin)) {
++		DBG(DBG_GADGET, "Vbus pin valid enable IRQ\n");
+ 		enable_irq(gpio_to_irq(udc->vbus_pin));
++	} else {
++	  DBG(DBG_GADGET, "No VBUS pin, skip IRQ IRQ\n");
++	}
+ 
+ 	/* If Vbus is present, enable the controller and wait for reset */
+ 	spin_lock_irqsave(&udc->lock, flags);
+@@ -1873,6 +1880,8 @@ static struct usba_ep *atmel_udc_of_init(struct platform_device *pdev,
+ 	udc->vbus_pin = of_get_named_gpio_flags(np, "atmel,vbus-gpio", 0,
+ 						&flags);
+ 	udc->vbus_pin_inverted = (flags & OF_GPIO_ACTIVE_LOW) ? 1 : 0;
++	
++	dev_info(&pdev->dev, "vbus_pin %d\n", udc->vbus_pin);
+ 	if (udc->vbus_pin) {
+ 		pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
+ 		if (IS_ERR(pinctrl)) {
