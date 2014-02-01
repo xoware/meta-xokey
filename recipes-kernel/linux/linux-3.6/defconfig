@@ -315,7 +315,6 @@ CONFIG_MACH_AT91SAM_DT=y
 #
 CONFIG_AT91_PROGRAMMABLE_CLOCKS=y
 CONFIG_AT91_TIMER_HZ=100
-# CONFIG_GPIO_PCA953X is not set
 
 #
 # Processor Type
@@ -808,9 +807,6 @@ CONFIG_MTD_CFI_UTIL=y
 #
 # Self-contained MTD device drivers
 #
-# CONFIG_MTD_DATAFLASH is not set
-# CONFIG_MTD_M25P80 is not set
-# CONFIG_MTD_SST25L is not set
 # CONFIG_MTD_SLRAM is not set
 # CONFIG_MTD_PHRAM is not set
 # CONFIG_MTD_MTDRAM is not set
@@ -860,7 +856,6 @@ CONFIG_OF_EARLY_FLATTREE=y
 CONFIG_OF_ADDRESS=y
 CONFIG_OF_IRQ=y
 CONFIG_OF_DEVICE=y
-CONFIG_OF_I2C=y
 CONFIG_OF_NET=y
 CONFIG_OF_MDIO=y
 CONFIG_OF_MTD=y
@@ -885,50 +880,27 @@ CONFIG_BLK_DEV_RAM_SIZE=8192
 # Misc devices
 #
 # CONFIG_SENSORS_LIS3LV02D is not set
-# CONFIG_AD525X_DPOT is not set
 # CONFIG_ATMEL_PWM is not set
 CONFIG_ATMEL_TCLIB=y
 CONFIG_ATMEL_TCB_CLKSRC=y
 CONFIG_ATMEL_TCB_CLKSRC_BLOCK=0
-# CONFIG_ICS932S401 is not set
 CONFIG_ATMEL_SSC=y
 # CONFIG_ENCLOSURE_SERVICES is not set
-# CONFIG_APDS9802ALS is not set
-# CONFIG_ISL29003 is not set
-# CONFIG_ISL29020 is not set
-# CONFIG_SENSORS_TSL2550 is not set
-# CONFIG_SENSORS_BH1780 is not set
-# CONFIG_SENSORS_BH1770 is not set
-# CONFIG_SENSORS_APDS990X is not set
-# CONFIG_HMC6352 is not set
-# CONFIG_DS1682 is not set
-# CONFIG_TI_DAC7512 is not set
-# CONFIG_BMP085_I2C is not set
-# CONFIG_BMP085_SPI is not set
-# CONFIG_USB_SWITCH_FSA9480 is not set
 # CONFIG_C2PORT is not set
 
 #
 # EEPROM support
 #
-CONFIG_EEPROM_AT24=y
-# CONFIG_EEPROM_AT25 is not set
-# CONFIG_EEPROM_LEGACY is not set
-# CONFIG_EEPROM_MAX6875 is not set
 CONFIG_EEPROM_93CX6=m
-# CONFIG_EEPROM_93XX46 is not set
 
 #
 # Texas Instruments shared transport line discipline
 #
 # CONFIG_TI_ST is not set
-# CONFIG_SENSORS_LIS3_SPI is not set
-# CONFIG_SENSORS_LIS3_I2C is not set
 
 #
 # Altera FPGA firmware download module
 #
-# CONFIG_ALTERA_STAPL is not set
 
 #
 # SCSI device support
@@ -971,8 +943,6 @@ CONFIG_MACB=y
 # CONFIG_NET_VENDOR_INTEL is not set
 # CONFIG_NET_VENDOR_MARVELL is not set
 # CONFIG_NET_VENDOR_MICREL is not set
-CONFIG_NET_VENDOR_MICROCHIP=y
-# CONFIG_ENC28J60 is not set
 # CONFIG_NET_VENDOR_NATSEMI is not set
 # CONFIG_ETHOC is not set
 CONFIG_NET_VENDOR_SEEQ=y
@@ -1004,7 +974,6 @@ CONFIG_PHYLIB=y
 # CONFIG_FIXED_PHY is not set
 # CONFIG_MDIO_BITBANG is not set
 # CONFIG_MDIO_BUS_MUX_GPIO is not set
-# CONFIG_MICREL_KS8995MA is not set
 # CONFIG_PPP is not set
 # CONFIG_SLIP is not set
 # CONFIG_WLAN is not set
@@ -1077,14 +1046,11 @@ CONFIG_SERIAL_ATMEL=y
 CONFIG_SERIAL_ATMEL_CONSOLE=y
 CONFIG_SERIAL_ATMEL_PDC=y
 # CONFIG_SERIAL_ATMEL_TTYAT is not set
-# CONFIG_SERIAL_MAX3100 is not set
-# CONFIG_SERIAL_MAX3107 is not set
 CONFIG_SERIAL_CORE=y
 CONFIG_SERIAL_CORE_CONSOLE=y
 # CONFIG_SERIAL_TIMBERDALE is not set
 # CONFIG_SERIAL_ALTERA_JTAGUART is not set
 # CONFIG_SERIAL_ALTERA_UART is not set
-# CONFIG_SERIAL_IFX6X60 is not set
 # CONFIG_SERIAL_XILINX_PS_UART is not set
 # CONFIG_TTY_PRINTK is not set
 # CONFIG_HVC_DCC is not set
@@ -1096,65 +1062,8 @@ CONFIG_HW_RANDOM_ATMEL=y
 # CONFIG_R3964 is not set
 # CONFIG_RAW_DRIVER is not set
 # CONFIG_TCG_TPM is not set
-CONFIG_I2C=y
-CONFIG_I2C_BOARDINFO=y
-CONFIG_I2C_COMPAT=y
-CONFIG_I2C_CHARDEV=y
-# CONFIG_I2C_MUX is not set
-CONFIG_I2C_HELPER_AUTO=y
-CONFIG_I2C_ALGOBIT=y
-
-#
-# I2C Hardware Bus support
-#
-
-#
-# I2C system bus drivers (mostly embedded / system-on-chip)
-#
-# CONFIG_I2C_AT91 is not set
-# CONFIG_I2C_DESIGNWARE_PLATFORM is not set
-CONFIG_I2C_GPIO=y
-# CONFIG_I2C_OCORES is not set
-# CONFIG_I2C_PCA_PLATFORM is not set
-# CONFIG_I2C_PXA_PCI is not set
-# CONFIG_I2C_SIMTEC is not set
-# CONFIG_I2C_XILINX is not set
-
-#
-# External I2C/SMBus adapter drivers
-#
-# CONFIG_I2C_PARPORT_LIGHT is not set
-# CONFIG_I2C_TAOS_EVM is not set
-
-#
-# Other I2C/SMBus bus drivers
-#
-# CONFIG_I2C_STUB is not set
-# CONFIG_I2C_DEBUG_CORE is not set
-# CONFIG_I2C_DEBUG_ALGO is not set
-# CONFIG_I2C_DEBUG_BUS is not set
-CONFIG_SPI=y
-# CONFIG_SPI_DEBUG is not set
-CONFIG_SPI_MASTER=y
-
-#
-# SPI Master Controller Drivers
-#
-# CONFIG_SPI_ALTERA is not set
-CONFIG_SPI_ATMEL=y
-CONFIG_SPI_BITBANG=y
-CONFIG_SPI_GPIO=y
-# CONFIG_SPI_OC_TINY is not set
-# CONFIG_SPI_PXA2XX_PCI is not set
-# CONFIG_SPI_XCOMM is not set
-# CONFIG_SPI_XILINX is not set
-# CONFIG_SPI_DESIGNWARE is not set
-
-#
-# SPI Protocol Masters
-#
-# CONFIG_SPI_SPIDEV is not set
-# CONFIG_SPI_TLE62X0 is not set
+# CONFIG_I2C is not set
+# CONFIG_SPI is not set
 # CONFIG_HSI is not set
 
 #
@@ -1199,11 +1108,6 @@ CONFIG_OF_GPIO=y
 #
 # I2C GPIO expanders:
 #
-# CONFIG_GPIO_MAX7300 is not set
-# CONFIG_GPIO_MAX732X is not set
-# CONFIG_GPIO_PCF857X is not set
-# CONFIG_GPIO_SX150X is not set
-# CONFIG_GPIO_ADP5588 is not set
 
 #
 # PCI GPIO expanders:
@@ -1212,10 +1116,6 @@ CONFIG_OF_GPIO=y
 #
 # SPI GPIO expanders:
 #
-# CONFIG_GPIO_MAX7301 is not set
-# CONFIG_GPIO_MCP23S08 is not set
-# CONFIG_GPIO_MC33880 is not set
-# CONFIG_GPIO_74X164 is not set
 
 #
 # AC97 GPIO expanders:
@@ -1259,57 +1159,15 @@ CONFIG_BCMA_POSSIBLE=y
 # Multifunction device drivers
 #
 # CONFIG_MFD_CORE is not set
-# CONFIG_MFD_88PM860X is not set
-# CONFIG_MFD_88PM800 is not set
-# CONFIG_MFD_88PM805 is not set
 # CONFIG_MFD_SM501 is not set
 # CONFIG_MFD_ASIC3 is not set
 # CONFIG_HTC_EGPIO is not set
 # CONFIG_HTC_PASIC3 is not set
-# CONFIG_HTC_I2CPLD is not set
-# CONFIG_MFD_LM3533 is not set
-# CONFIG_TPS6105X is not set
-# CONFIG_TPS65010 is not set
-# CONFIG_TPS6507X is not set
-# CONFIG_MFD_TPS65217 is not set
-# CONFIG_MFD_TPS65910 is not set
-# CONFIG_MFD_TPS65912_I2C is not set
-# CONFIG_MFD_TPS65912_SPI is not set
-# CONFIG_TWL4030_CORE is not set
-# CONFIG_TWL6040_CORE is not set
-# CONFIG_MFD_STMPE is not set
-# CONFIG_MFD_TC3589X is not set
 # CONFIG_MFD_TMIO is not set
 # CONFIG_MFD_T7L66XB is not set
 # CONFIG_MFD_TC6387XB is not set
 # CONFIG_MFD_TC6393XB is not set
-# CONFIG_PMIC_DA903X is not set
-# CONFIG_MFD_DA9052_SPI is not set
-# CONFIG_MFD_DA9052_I2C is not set
-# CONFIG_PMIC_ADP5520 is not set
-# CONFIG_MFD_MAX77686 is not set
-# CONFIG_MFD_MAX77693 is not set
-# CONFIG_MFD_MAX8925 is not set
-# CONFIG_MFD_MAX8997 is not set
-# CONFIG_MFD_MAX8998 is not set
-# CONFIG_MFD_SEC_CORE is not set
-# CONFIG_MFD_ARIZONA_I2C is not set
-# CONFIG_MFD_ARIZONA_SPI is not set
-# CONFIG_MFD_WM8400 is not set
-# CONFIG_MFD_WM831X_I2C is not set
-# CONFIG_MFD_WM831X_SPI is not set
-# CONFIG_MFD_WM8350_I2C is not set
-# CONFIG_MFD_WM8994 is not set
-# CONFIG_MFD_PCF50633 is not set
-# CONFIG_MFD_MC13XXX_SPI is not set
-# CONFIG_MFD_MC13XXX_I2C is not set
 # CONFIG_ABX500_CORE is not set
-# CONFIG_EZX_PCAP is not set
-# CONFIG_MFD_WL1273_CORE is not set
-# CONFIG_MFD_TPS65090 is not set
-# CONFIG_MFD_AAT2870_CORE is not set
-# CONFIG_MFD_RC5T583 is not set
-# CONFIG_MFD_PALMAS is not set
 # CONFIG_REGULATOR is not set
 # CONFIG_MEDIA_SUPPORT is not set
 
@@ -1360,7 +1218,6 @@ CONFIG_USB_ARCH_HAS_HCD=y
 #
 # USB Physical Layer drivers
 #
-# CONFIG_USB_ISP1301 is not set
 CONFIG_USB_GADGET=m
 # CONFIG_USB_GADGET_DEBUG is not set
 CONFIG_USB_GADGET_DEBUG_FILES=y
@@ -1423,40 +1280,8 @@ CONFIG_RTC_INTF_DEV=y
 # CONFIG_RTC_DRV_TEST is not set
 
 #
-# I2C RTC drivers
-#
-# CONFIG_RTC_DRV_DS1307 is not set
-# CONFIG_RTC_DRV_DS1374 is not set
-# CONFIG_RTC_DRV_DS1672 is not set
-# CONFIG_RTC_DRV_DS3232 is not set
-# CONFIG_RTC_DRV_MAX6900 is not set
-# CONFIG_RTC_DRV_RS5C372 is not set
-# CONFIG_RTC_DRV_ISL1208 is not set
-# CONFIG_RTC_DRV_ISL12022 is not set
-# CONFIG_RTC_DRV_X1205 is not set
-# CONFIG_RTC_DRV_PCF8563 is not set
-# CONFIG_RTC_DRV_PCF8583 is not set
-# CONFIG_RTC_DRV_M41T80 is not set
-# CONFIG_RTC_DRV_BQ32K is not set
-# CONFIG_RTC_DRV_S35390A is not set
-# CONFIG_RTC_DRV_FM3130 is not set
-# CONFIG_RTC_DRV_RX8581 is not set
-# CONFIG_RTC_DRV_RX8025 is not set
-# CONFIG_RTC_DRV_EM3027 is not set
-# CONFIG_RTC_DRV_RV3029C2 is not set
-
-#
 # SPI RTC drivers
 #
-# CONFIG_RTC_DRV_M41T93 is not set
-# CONFIG_RTC_DRV_M41T94 is not set
-# CONFIG_RTC_DRV_DS1305 is not set
-# CONFIG_RTC_DRV_DS1390 is not set
-# CONFIG_RTC_DRV_MAX6902 is not set
-# CONFIG_RTC_DRV_R9701 is not set
-# CONFIG_RTC_DRV_RS5C348 is not set
-# CONFIG_RTC_DRV_DS3234 is not set
-# CONFIG_RTC_DRV_PCF2123 is not set
 
 #
 # Platform RTC drivers
@@ -1569,11 +1394,8 @@ CONFIG_FANOTIFY=y
 #
 # DOS/FAT/NT Filesystems
 #
-CONFIG_FAT_FS=y
 # CONFIG_MSDOS_FS is not set
-CONFIG_VFAT_FS=y
-CONFIG_FAT_DEFAULT_CODEPAGE=437
-CONFIG_FAT_DEFAULT_IOCHARSET="iso8859-1"
+# CONFIG_VFAT_FS is not set
 # CONFIG_NTFS_FS is not set
 
 #
