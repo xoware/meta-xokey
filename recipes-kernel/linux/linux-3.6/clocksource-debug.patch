@@ -1,0 +1,22 @@
+diff --git a/drivers/clocksource/tcb_clksrc.c b/drivers/clocksource/tcb_clksrc.c
+index 32cb929..c73205c 100644
+--- a/drivers/clocksource/tcb_clksrc.c
++++ b/drivers/clocksource/tcb_clksrc.c
+@@ -273,7 +273,7 @@ static int __init tcb_clksrc_init(void)
+ 
+ 	tc = atmel_tc_alloc(CONFIG_ATMEL_TCB_CLKSRC_BLOCK, clksrc.name);
+ 	if (!tc) {
+-		pr_debug("can't alloc TC for clocksource\n");
++		pr_err("can't alloc TC for clocksource\n");
+ 		return -ENODEV;
+ 	}
+ 	tcaddr = tc->regs;
+@@ -295,7 +295,7 @@ static int __init tcb_clksrc_init(void)
+ 		}
+ 
+ 		tmp = rate / divisor;
+-		pr_debug("TC: %u / %-3u [%d] --> %u\n", rate, divisor, i, tmp);
++		pr_info("TC: %u / %-3u [%d] --> %u\n", rate, divisor, i, tmp);
+ 		if (best_divisor_idx > 0) {
+ 			if (tmp < 5 * 1000 * 1000)
+ 				continue;
