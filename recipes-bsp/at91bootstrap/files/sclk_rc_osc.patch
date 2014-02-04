@@ -1,0 +1,44 @@
+diff --git a/board/sama5d3xek/sama5d3xek.c b/board/sama5d3xek/sama5d3xek.c
+index 885b674..a21365e 100644
+--- a/board/sama5d3xek/sama5d3xek.c
++++ b/board/sama5d3xek/sama5d3xek.c
+@@ -44,6 +44,7 @@
+ #include "arch/sama5_smc.h"
+ #include "arch/at91_pio.h"
+ #include "arch/at91_ddrsdrc.h"
++#include "arch/at91_slowclk.h"
+ #include "sama5d3xek.h"
+ 
+ #ifdef CONFIG_USER_HW_INIT
+@@ -307,6 +308,8 @@ void hw_init(void)
+ #ifdef CONFIG_SCLK
+ 	slowclk_enable_osc32();
+ #endif
++	writel(AT91C_SLCKSEL_RCEN , AT91C_BASE_SCKCR);
++
+ 
+ 	/* initialize the dbgu */
+ 	initialize_dbgu();
+diff --git a/main.c b/main.c
+index 1d1a9b3..b106215 100644
+--- a/main.c
++++ b/main.c
+@@ -158,6 +158,7 @@ int main(void)
+ 
+ #ifdef CONFIG_SCLK
+ 	slowclk_switch_osc32();
++#error fixme
+ #endif
+ 
+ 	return JUMP_ADDR;
+[1mdiff --git a/board/sama5d3xek/sama5d3xeknf_uboot_defconfig b/board/sama5d3xek/sama5d3xeknf_uboot_defconfig[m
+[1mindex 8fcd40b..851d134 100644[m
+[1m--- a/board/sama5d3xek/sama5d3xeknf_uboot_defconfig[m
+[1m+++ b/board/sama5d3xek/sama5d3xeknf_uboot_defconfig[m
+[36m@@ -122,5 +122,5 @@[m [mCONFIG_DEBUG_INFO=y[m
+ # CONFIG_DEBUG_VERY_LOUD is not set[m
+ CONFIG_HW_INIT=y[m
+ # CONFIG_USER_HW_INIT is not set[m
+[31m-CONFIG_SCLK=y[m
+[32m+[m[32m# CONFIG_SCLK is not set[m
+ CONFIG_DISABLE_WATCHDOG=y[m

@@ -12,7 +12,9 @@ PV="v3.6.0"
 SRC_URI =  "git://github.com/linux4sam/at91bootstrap.git;protocol=git"
 
 
-SRC_URI += "file://exokey_lpddr2.patch "
+SRC_URI += "file://exokey_lpddr2.patch \
+	file://sclk_rc_osc.patch \
+	file://ek1_nf_defconfig "
 
 S = "${WORKDIR}/git"
 
@@ -39,7 +41,8 @@ do_configure_exokey() {
 	unset CFLAGS
 	unset CPPFLAGS
 	unset ASFLAGS
-	make CROSS_COMPILE=${TARGET_PREFIX} sama5d3xeknf_uboot_defconfig
+	#make CROSS_COMPILE=${TARGET_PREFIX} sama5d3xeknf_uboot_defconfig
+	cp ${WORKDIR}/ek1_nf_defconfig .config
 }
 
 
