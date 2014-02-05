@@ -68,34 +68,78 @@ index 8730531..624894b 100644
  		};
  
 diff --git a/drivers/usb/gadget/atmel_usba_udc.c b/drivers/usb/gadget/atmel_usba_udc.c
-index 87db333..b611b4f 100644
+index 87db333..f77e114 100644
 --- a/drivers/usb/gadget/atmel_usba_udc.c
 +++ b/drivers/usb/gadget/atmel_usba_udc.c
-@@ -7,6 +7,9 @@
-  * it under the terms of the GNU General Public License version 2 as
-  * published by the Free Software Foundation.
-  */
-+
-+#define DEBUG 1
-+
- #include <linux/clk.h>
- #include <linux/module.h>
- #include <linux/init.h>
-@@ -1811,8 +1814,12 @@ static int atmel_usba_start(struct usb_gadget *gadget,
+@@ -322,8 +325,8 @@ static inline void usba_cleanup_debugfs(struct usba_udc *udc)
+ 
+ static int vbus_is_present(struct usba_udc *udc)
+ {
+-	if (gpio_is_valid(udc->vbus_pin))
+-		return gpio_get_value(udc->vbus_pin) ^ udc->vbus_pin_inverted;
++// 	if (gpio_is_valid(udc->vbus_pin))
++// 		return gpio_get_value(udc->vbus_pin) ^ udc->vbus_pin_inverted;
+ 
+ 	/* No Vbus detection: Assume always present */
+ 	return 1;
+@@ -1752,18 +1755,19 @@ static irqreturn_t usba_udc_irq(int irq, void *devid)
+ 	return IRQ_HANDLED;
+ }
+ 
++/*
+ static irqreturn_t usba_vbus_irq(int irq, void *devid)
+ {
+ 	struct usba_udc *udc = devid;
+ 	int vbus;
+ 
+-	/* debounce */
++	/* debounce *//*
+ 	udelay(10);
+ 
+ 	spin_lock(&udc->lock);
+ 
+ 	/* May happen if Vbus pin toggles during probe() */
+-	if (!udc->driver)
++	/*if (!udc->driver)
+ 		goto out;
+ 
+ 	vbus = vbus_is_present(udc);
+@@ -1791,7 +1795,7 @@ out:
+ 
+ 	return IRQ_HANDLED;
+ }
+-
++ */
+ static int atmel_usba_start(struct usb_gadget *gadget,
+ 		struct usb_gadget_driver *driver)
+ {
+@@ -1811,8 +1815,12 @@ static int atmel_usba_start(struct usb_gadget *gadget,
  	DBG(DBG_GADGET, "registered driver `%s'\n", driver->driver.name);
  
  	udc->vbus_prev = 0;
 -	if (gpio_is_valid(udc->vbus_pin))
-+	if (gpio_is_valid(udc->vbus_pin)) {
-+		DBG(DBG_GADGET, "Vbus pin valid enable IRQ\n");
- 		enable_irq(gpio_to_irq(udc->vbus_pin));
-+	} else {
+-		enable_irq(gpio_to_irq(udc->vbus_pin));
++// 	if (gpio_is_valid(udc->vbus_pin)) {
++// 		DBG(DBG_GADGET, "Vbus pin valid enable IRQ\n");
++// 		enable_irq(gpio_to_irq(udc->vbus_pin));
++// 	} else {
 +	  DBG(DBG_GADGET, "No VBUS pin, skip IRQ IRQ\n");
-+	}
++// 	}
  
  	/* If Vbus is present, enable the controller and wait for reset */
  	spin_lock_irqsave(&udc->lock, flags);
-@@ -1873,6 +1880,8 @@ static struct usba_ep *atmel_udc_of_init(struct platform_device *pdev,
+@@ -1832,8 +1840,8 @@ static int atmel_usba_stop(struct usb_gadget *gadget,
+ 	struct usba_udc *udc = container_of(gadget, struct usba_udc, gadget);
+ 	unsigned long flags;
+ 
+-	if (gpio_is_valid(udc->vbus_pin))
+-		disable_irq(gpio_to_irq(udc->vbus_pin));
++// 	if (gpio_is_valid(udc->vbus_pin))
++// 		disable_irq(gpio_to_irq(udc->vbus_pin));
+ 
+ 	spin_lock_irqsave(&udc->lock, flags);
+ 	udc->gadget.speed = USB_SPEED_UNKNOWN;
+@@ -1873,6 +1881,8 @@ static struct usba_ep *atmel_udc_of_init(struct platform_device *pdev,
  	udc->vbus_pin = of_get_named_gpio_flags(np, "atmel,vbus-gpio", 0,
  						&flags);
  	udc->vbus_pin_inverted = (flags & OF_GPIO_ACTIVE_LOW) ? 1 : 0;
@@ -104,3 +148,93 @@ index 87db333..b611b4f 100644
  	if (udc->vbus_pin) {
  		pinctrl = devm_pinctrl_get_select_default(&pdev->dev);
  		if (IS_ERR(pinctrl)) {
+@@ -2074,34 +2084,36 @@ static int __init usba_udc_probe(struct platform_device *pdev)
+ 		goto err_request_irq;
+ 	}
+ 	udc->irq = irq;
+-
++	dev_info(&pdev->dev, "UDC IRQ=%d\n", irq);
++	
+ 	ret = device_add(&udc->gadget.dev);
+ 	if (ret) {
+ 		dev_dbg(&pdev->dev, "Could not add gadget: %d\n", ret);
+ 		goto err_device_add;
+ 	}
+ 
+-	if (gpio_is_valid(udc->vbus_pin)) {
+-		if (!gpio_request(udc->vbus_pin, "atmel_usba_udc")) {
+-
+-			ret = request_irq(gpio_to_irq(udc->vbus_pin),
+-					usba_vbus_irq, 0,
+-					"atmel_usba_udc", udc);
+-			if (ret) {
+-				gpio_free(udc->vbus_pin);
+-				udc->vbus_pin = -ENODEV;
+-				dev_warn(&udc->pdev->dev,
+-					 "failed to request vbus irq; "
+-					 "assuming always on\n");
+-			} else {
+-				disable_irq(gpio_to_irq(udc->vbus_pin));
+-			}
+-		} else {
++// 	if (gpio_is_valid(udc->vbus_pin)) {
++// 		if (!gpio_request(udc->vbus_pin, "atmel_usba_udc")) {
++// 
++// 			ret = request_irq(gpio_to_irq(udc->vbus_pin),
++// 					usba_vbus_irq, 0,
++// 					"atmel_usba_udc", udc);
++// 			if (ret) {
++// 				gpio_free(udc->vbus_pin);
++// 				udc->vbus_pin = -ENODEV;
++// 				dev_warn(&udc->pdev->dev,
++// 					 "failed to request vbus irq; "
++// 					 "assuming always on\n");
++// 			} else {
++// 				disable_irq(gpio_to_irq(udc->vbus_pin));
++// 			}
++// 		} else {
+ 			/* gpio_request fail so use -EINVAL for gpio_is_valid */
+ 			udc->vbus_pin = -EINVAL;
+-		}
+-	}
++// 		}
++// 	}
+ 
++	dev_info(&pdev->dev, "Add Gadget UDC\n");
+ 	ret = usb_add_gadget_udc(&pdev->dev, &udc->gadget);
+ 	if (ret)
+ 		goto err_add_udc;
+@@ -2110,13 +2122,14 @@ static int __init usba_udc_probe(struct platform_device *pdev)
+ 	for (i = 1; i < udc->num_ep; i++)
+ 		usba_ep_init_debugfs(udc, &usba_ep[i]);
+ 
++	dev_info(&pdev->dev, "Probe Finished\n");
+ 	return 0;
+ 
+ err_add_udc:
+-	if (gpio_is_valid(udc->vbus_pin)) {
+-		free_irq(gpio_to_irq(udc->vbus_pin), udc);
+-		gpio_free(udc->vbus_pin);
+-	}
++// 	if (gpio_is_valid(udc->vbus_pin)) {
++// 		free_irq(gpio_to_irq(udc->vbus_pin), udc);
++// 		gpio_free(udc->vbus_pin);
++// 	}
+ 
+ 	device_unregister(&udc->gadget.dev);
+ 
+@@ -2151,10 +2164,10 @@ static int __exit usba_udc_remove(struct platform_device *pdev)
+ 		usba_ep_cleanup_debugfs(&usba_ep[i]);
+ 	usba_cleanup_debugfs(udc);
+ 
+-	if (gpio_is_valid(udc->vbus_pin)) {
+-		free_irq(gpio_to_irq(udc->vbus_pin), udc);
+-		gpio_free(udc->vbus_pin);
+-	}
++// 	if (gpio_is_valid(udc->vbus_pin)) {
++// 		free_irq(gpio_to_irq(udc->vbus_pin), udc);
++// 		gpio_free(udc->vbus_pin);
++// 	}
+ 
+ 	free_irq(udc->irq, udc);
+ 	kfree(usba_ep);
