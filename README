@@ -6,12 +6,13 @@ Build procedure:
 1. Clone yocto/poky git repository
 git clone git://git.yoctoproject.org/poky
 
-2. Checkout dylan-9.0.2 tag
-cd poky
-git checkout dylan-9.0.2 -b my_branch
+
+2 Checkout dylan (9.X) branch 
+cd poky && git checkout dylan -b my_branch
 
 3. Clone meta-atmel layer
 git clone http://github.com/linux4sam/meta-atmel
+cd meta-atmel && git checkout a4a3976f5262e343cf83c07786d1cfc8e75398d0 && cd ..
 
 4.  Clone meta-exokey layer
 git clone git@github.com:xoware/meta-xokey.git
@@ -50,8 +51,10 @@ PACKAGE_CLASSES ?= "package_ipk"
 set BB_NUMBER_THREADS, PARALLEL_MAKE as you like for your PC
 
 
+
 8. Build exokey image
 bitbake -v exokey-image
+
 
   This will build and produce output in build/tmp/deploy/images:
   A) firmware image in build/tmp/deploy/images/EK_firmware*.img   This is the image used in the UI
