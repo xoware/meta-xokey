@@ -46,7 +46,7 @@ EXOKEY_PKGS += "kernel-modules"
 IMAGE_INSTALL = "packagegroup-core-boot ${ROOTFS_PKGMANAGE_BOOTSTRAP} ${CORE_IMAGE_EXTRA_INSTALL}  ${EXOKEY_PKGS}"
 
 
-LICENSE_FLAGS_WHITELIST += "commercial"
+LICENSE_FLAGS_WHITELIST += "commercial CLOSED"
 RDEPENDS_kernel-base = ""
 
 INITRAMFS_FSTYPES = "cpio.gz"
