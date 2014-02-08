@@ -1,0 +1,65 @@
+From 14a121ccd9104be834fffd7e77ce6c913018f06f Mon Sep 17 00:00:00 2001
+From: Karl Hiramoto <karl@hiramoto.org>
+Date: Sat, 8 Feb 2014 15:23:34 +0100
+Subject: [PATCH 4/4] set default bootcmd and bootargs.  Reduce timeout from 3
+ to 1sec
+
+---
+ include/configs/sama5d3xek.h | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/include/configs/sama5d3xek.h b/include/configs/sama5d3xek.h
+index dbe7d55..bd3d2f8 100644
+--- a/include/configs/sama5d3xek.h
++++ b/include/configs/sama5d3xek.h
+@@ -95,7 +95,7 @@
+ /* board specific(not enough SRAM) */
+ #define CONFIG_SAMA5D3_LCD_BASE		0x23E00000
+ 
+-#define CONFIG_BOOTDELAY		3
++#define CONFIG_BOOTDELAY		1
+ 
+ /*
+  * BOOTP options
+@@ -139,6 +139,10 @@
+ /* No NOR flash */
+ #define CONFIG_SYS_NO_FLASH
+ 
++
++#define CONFIG_MTD_DEBUG
++#define CONFIG_MTD_DEBUG_VERBOSE     1
++
+ /* NAND flash */
+ #define CONFIG_CMD_NAND
+ 
+@@ -221,9 +225,9 @@
+ #define CONFIG_ENV_OFFSET		0xc0000
+ #define CONFIG_ENV_OFFSET_REDUND	0x100000
+ #define CONFIG_ENV_SIZE			0x20000
+-#define CONFIG_BOOTCOMMAND	"nand read 0x21000000 0x180000 0x80000;" \
+-				"nand read 0x22000000 0x200000 0x600000;" \
+-				"bootz 0x22000000 - 0x21000000"
++#define CONFIG_BOOTCOMMAND	"nand read 0x21000000 0x00180000 0x00010000;"\
++				"nand read 0x22000000 0x00200000 0x580000;"\
++				"bootm 0x22000000 - 0x21000000"
+ #elif CONFIG_SYS_USE_MMC
+ /* bootstrap + u-boot + env in sd card */
+ #define CONFIG_ENV_IS_IN_MMC
+@@ -245,11 +249,9 @@
+ 	"rw rootfstype=ext2 rootdelay=2"
+ #else
+ #define CONFIG_BOOTARGS							\
+-	"console=ttyS0,115200 earlyprintk "				\
+-	"mtdparts=atmel_nand:256k(bootstrap)ro,512k(uboot)ro,"		\
+-	"256K(env),256k(evn_redundent),256k(spare),"			\
+-	"512k(dtb),6M(kernel)ro,-(rootfs) "				\
+-	"rootfstype=ubifs ubi.mtd=7 root=ubi0:rootfs"
++	"console=ttyS0,115200 " \
++	"mtdparts=atmel_nand:256K(bs)ro,512K(ub)ro,256K(env)ro,512K(env_r)ro,512K(dtb),6M(ker),8M(cfg),-(store) "\
++	" root=/dev/ram0 ubi.mtd=7	"
+ #endif
+ 
+ #define CONFIG_BAUDRATE			115200
+-- 
+1.8.3.2
+

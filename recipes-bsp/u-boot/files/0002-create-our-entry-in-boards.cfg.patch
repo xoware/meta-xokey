@@ -1,0 +1,24 @@
+From 29a306c160bca9f7b6b7e72bafdf84e9461a416b Mon Sep 17 00:00:00 2001
+From: Karl Hiramoto <karl@hiramoto.org>
+Date: Sat, 8 Feb 2014 15:08:26 +0100
+Subject: [PATCH 2/4] create our entry in boards.cfg
+
+---
+ boards.cfg | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/boards.cfg b/boards.cfg
+index 8480e1a..a71c6b5 100644
+--- a/boards.cfg
++++ b/boards.cfg
+@@ -233,6 +233,7 @@ integratorap_cm946es         arm         arm946es    integrator          armltd
+ integratorcp_cm946es         arm         arm946es    integrator          armltd         -               integratorcp:CM946ES
+ ca9x4_ct_vxp                 arm         armv7       vexpress            armltd
+ am335x_evm                   arm         armv7       am335x              ti             am33xx
++exokey_nandflash                arm         armv7       sama5d3xek          atmel          at91        sama5d3xek:SAMA5D3,SYS_USE_NANDFLASH
+ sama5d3xek_nandflash         arm         armv7       sama5d3xek          atmel          at91        sama5d3xek:SAMA5D3,SYS_USE_NANDFLASH
+ sama5d3xek_serialflash       arm         armv7       sama5d3xek          atmel          at91        sama5d3xek:SAMA5D3,SYS_USE_SERIALFLASH
+ sama5d3xek_sdcard	     arm         armv7       sama5d3xek          atmel          at91        sama5d3xek:SAMA5D3,SYS_USE_MMC
+-- 
+1.8.3.2
+
