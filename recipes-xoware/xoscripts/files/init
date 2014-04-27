@@ -176,7 +176,7 @@ check_tftp_upgrade () {
 	cd /tmp
 	rm_old_ubi_vols
 	tftp_rootfs
-	ubimkvol /dev/ubi0 -s 28MiB -N rootfs
+	ubimkvol /dev/ubi0 -s 20MiB -N rootfs
 	ubimkvol_ret=$?
 	echo "ubimkvol returned=${ubimkvol_ret}"
 	if [ $ubimkvol_ret -ne 0  ]
