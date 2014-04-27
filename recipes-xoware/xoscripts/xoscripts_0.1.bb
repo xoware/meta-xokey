@@ -10,7 +10,6 @@ SRC_URI =  "file://profile \
             file://openvpn.up.sh \
             file://openvpn.down.sh \
             file://rcS \
-            file://openssl.cnf \
             file://S80xokd \
             file://coredumps \
             file://check_ssl.sh"
@@ -41,7 +40,7 @@ do_install () {
 	install -m 0755 ${WORKDIR}/S80xokd ${D}${sysconfdir}/init.d/
 	install -m 0755 ${WORKDIR}/openvpn.up.sh ${D}${sysconfdir}/openvpn/
 	install -m 0755 ${WORKDIR}/openvpn.down.sh ${D}${sysconfdir}/openvpn/
-	install -m 0444 ${WORKDIR}/openssl.cnf ${D}/usr/lib/ssl/openssl.cnf
+#	install -m 0444 ${WORKDIR}/openssl.cnf ${D}/usr/lib/ssl/openssl.cnf
 	ln -sf  syslog.busybox ${D}/etc/init.d/S00syslog
 	ln -sf  /tmp/resolv.conf ${D}/etc/resolv.conf
 	echo 1.0.`date +%Y%m%d%H%M` > ${D}/etc/XO_VERSION
