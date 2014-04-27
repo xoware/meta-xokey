@@ -5,24 +5,28 @@ IMAGE_LINGUAS = " "
 LICENSE = "MIT"
 DEPENDS = "ek-firmware-native"
 
-inherit image
+inherit core-image
 
 IMAGE_ROOTFS_SIZE = "8192"
 
 # remove not needed ipkg information
-ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
+#ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
 
 LINUX_VERSION_EXTENSION = "-xoware"
 
-IMAGE_INSTALL = "busybox xoscripts-initramfs mtd-utils mtd-utils-ubifs"
+PACKAGE_INSTALL = "busybox xoscripts-initramfs mtd-utils mtd-utils-ubifs"
+PACKAGE_INSTALL += " kernel-module-atmel-usba-udc "
+PACKAGE_INSTALL += " kernel-module-usb-common "
+PACKAGE_INSTALL += " kernel-module-g-ether "
 
 
-LICENSE_FLAGS_WHITELIST += "commercial"
-RDEPENDS_kernel-base = ""
-
+LICENSE_FLAGS_WHITELIST += "commercial "
+LICENSE_FLAGS_WHITELIST += "CLOSED "
+#RDEPENDS_kernel-base = ""
 
 KERNEL_IMAGETYPE = "uImage"
-IMAGE_FSTYPES = "cpio cpio.gz"
+IMAGE_FSTYPES = "cpio.gz"
+IMAGE_DEVICE_TABLES = "files/ek_device_table.txt"
 
 
 do_rootfs_append () {
