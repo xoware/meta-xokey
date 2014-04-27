@@ -4,7 +4,7 @@
 KBRANCH = "linux-3.6.9-at91"
 
 #add recipie that has our initramfs
-INITRAMFS_IMAGE = "exokey-initramfs"
+
 
 
 # path to get defconfig from
@@ -30,3 +30,6 @@ PV = "${LINUX_VERSION}+${SRCREV}"
 
 #add exokey machine
 COMPATIBLE_MACHINE = "(sama5d3xek|at91sam9x5ek|exokey)"
+
+#disable parallel make install incase this fixes race
+PARALLEL_MAKEINST=""
