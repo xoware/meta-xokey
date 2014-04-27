@@ -135,6 +135,68 @@ check_fw_upgrade () {
 	fi
 }
 
+tftp_rootfs() {
+	local count=19
+	while [ ${count} -gt 0 ]
+	do 
+		count=$((count-1))
+		tftp -g -r ek_rootfs.squashfs  192.168.255.2
+		if [ "$?" = '0' ]
+		then
+			break
+		fi
+		echo "retries left ${count}"
+		sleep 3
+	done
+}
+
+rm_old_ubi_vols() {
+	nvols=`ubinfo -a |grep 'Volumes count' |cut -d: -f2`
+	echo "n_ubi_vols=${nvols}"
+	#trim leading whiespace
+	nvols=`expr "$nvols" : "\ *\(.*[^ ]\)\ *$"`
+	echo "n_ubi_vols=${nvols}"
+	if [ $nvols -gt 0  ]
+	then
+		ubirmvol /dev/ubi0 -n 2
+		ubirmvol /dev/ubi0 -n 1
+		ubirmvol /dev/ubi0 -n 0
+	fi
+}
+
+check_tftp_upgrade () {
+	echo "check_tftp_upgrade"
+	modprobe atmel_usba_udc
+	modprobe g_ether
+	ip link set usb0 up
+#NOTE could take out udhcpc if we always use static and save 2 secs
+	udhcpc -i usb0 -b
+	ip addr add 192.168.255.1/30 brd 192.168.255.3 dev usb0
+	mount -t tmpfs -osize=32M tmpfs /tmp/
+	cd /tmp
+	rm_old_ubi_vols
+	tftp_rootfs
+	ubimkvol /dev/ubi0 -s 28MiB -N rootfs
+	ubimkvol_ret=$?
+	echo "ubimkvol returned=${ubimkvol_ret}"
+	if [ $ubimkvol_ret -ne 0  ]
+	then
+		ubiformat /dev/mtd7 -y
+		ubiattach /dev/ubi_ctrl  -m 7
+		echo "ubiattach returned $?"
+		ubimkvol /dev/ubi0 -s 28MiB -N rootfs
+		ubimkvol_ret=$?
+		echo "ubimkvol returned=${ubimkvol_ret}"
+	fi
+	
+	ubiupdatevol /dev/ubi0_0 /tmp/ek_rootfs.squashfs
+	ubiupdatevol_ret=$?
+	echo "ubiupdatevol returned=${ubiupdatevol_ret}"
+	
+	ubinfo -a
+
+}
+
 mount_rootfs_squashfs_ubi () {
 	echo "checking squash rootfs"
 	if grep '"rootfs"' /proc/mtd > /dev/null 2>&1; then
@@ -161,7 +223,10 @@ mount_rootfs_squashfs_ubi () {
 			#remote_rescue_shell
 			rescue_shell
 		fi
-		
+	else
+		echo "no rootfs detected"
+		check_tftp_upgrade
+		rescue_shell
 	fi
 }
 
