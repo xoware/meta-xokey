@@ -4,7 +4,7 @@ LICENSE = "CLOSED"
 #BBCLASSEXTEND = "native"
 
 inherit native
-SRCREV = "HEAD"
+SRCREV = "master"
 
 
 SRC_URI = "git://github.com/xoware/xomkimage.git;branch=master;protocol=ssh;user=git"
