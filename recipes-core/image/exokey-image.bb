@@ -28,7 +28,7 @@ EXOKEY_PKGS += "iptables"
 #EXOKEY_PKGS += "cryptodev"
 EXOKEY_PKGS += "af-alg-engine"
 EXOKEY_PKGS += "strongswan strongswan-plugins"
-EXOKEY_PKGS += "iproute2"
+
 
 #Tools for now for debug/testing, remove for production
 EXOKEY_PKGS += "tcpdump"
@@ -41,17 +41,22 @@ EXOKEY_PKGS += "memtester"
 EXOKEY_PKGS += "libnl-route libnl-genl"
 #EXOKEY_PKGS += "oprofile"
 
+#bug iproute2 rdepends on bash
+#EXOKEY_PKGS += "bash"
+#EXOKEY_PKGS += "iproute2"
+
 #install all kernel modules
 EXOKEY_PKGS += "kernel-modules"
 
 IMAGE_INSTALL = "packagegroup-core-boot ${ROOTFS_PKGMANAGE_BOOTSTRAP} ${CORE_IMAGE_EXTRA_INSTALL}  ${EXOKEY_PKGS}"
 
 
-LICENSE_FLAGS_WHITELIST += "commercial CLOSED"
+LICENSE_FLAGS_WHITELIST += "commercial"
+LICENSE_FLAGS_WHITELIST += "CLOSED"
 RDEPENDS_kernel-base = ""
 
 INITRAMFS_FSTYPES = "cpio.gz"
-
+INITRAMFS_IMAGE = "exokey-initramfs"
 
 do_rootfs_append () {
 	XO_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/XO_VERSION`
