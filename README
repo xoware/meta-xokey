@@ -7,12 +7,13 @@ Build procedure:
 git clone git://git.yoctoproject.org/poky
 
 
-2 Checkout dylan (9.X) branch 
-cd poky && git checkout dylan -b my_branch
+2 Checkout dora (10.X) branch 
+cd poky && git checkout dora -b my_branch
 
-3. Clone meta-atmel layer
-git clone http://github.com/linux4sam/meta-atmel
-cd meta-atmel && git checkout a4a3976f5262e343cf83c07786d1cfc8e75398d0 && cd ..
+Skip step 3
+#3. Clone meta-atmel layer
+#git clone http://github.com/linux4sam/meta-atmel
+#cd meta-atmel && git checkout a4a3976f5262e343cf83c07786d1cfc8e75398d0 && cd ..
 
 4.  Clone meta-exokey layer
 git clone git@github.com:xoware/meta-xokey.git
@@ -21,7 +22,7 @@ git clone git@github.com:xoware/meta-xokey.git
 source oe-init-build-env build_ek
 
 
-6. Add meta-atmel, meta-exokey layers to bblayer configuration file
+6. Add  meta-exokey layer to bblayer configuration file
 vim conf/bblayers.conf
 
 # LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf
@@ -33,7 +34,6 @@ BBFILES ?= ""
 
 BBLAYERS ?= " \
   /home/karl/workspace/meta-xokey \
-  /home/karl/workspace/meta-atmel \
   /home/karl/workspace/meta \
   /home/karl/workspace/meta-yocto \
   /home/karl/workspace/meta-yocto-bsp \
@@ -48,6 +48,8 @@ DL_DIR ?= "your_download_directory_path"
 [...]
 PACKAGE_CLASSES ?= "package_ipk"
 
+
+Optional to build faster:
 set BB_NUMBER_THREADS, PARALLEL_MAKE as you like for your PC
 
 
