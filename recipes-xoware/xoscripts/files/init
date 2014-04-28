@@ -220,6 +220,7 @@ mount_rootfs_squashfs_ubi () {
 			mkdir -p /dev/pts
 			mount -t devpts none /dev/pts
 
+			check_tftp_upgrade
 			#remote_rescue_shell
 			rescue_shell
 		fi
