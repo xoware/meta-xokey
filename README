@@ -48,6 +48,9 @@ DL_DIR ?= "your_download_directory_path"
 [...]
 PACKAGE_CLASSES ?= "package_ipk"
 
+INITRAMFS_IMAGE = "exokey-initramfs"
+INITRAMFS_IMAGE_BUNDLE = "1"
+
 
 Optional to build faster:
 set BB_NUMBER_THREADS, PARALLEL_MAKE as you like for your PC

@@ -13,11 +13,11 @@ inherit autotools pkgconfig
 EXTRA_OECONF="--enable-exokey"
 
 SRC_URI = "git://github.com/xoware/xokd.git;branch=master;protocol=ssh;user=git"
-S = "${WORKDIR}/git"
+#S = "${WORKDIR}/git"
 
 #uncomment this to build code on local PC not on git repo
-# inherit externalsrc
-#S = "/home/karl/Work/xoware/xokd"
+inherit externalsrc
+S = "/home/karl/Work/xoware/xokd"
 
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
