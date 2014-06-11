@@ -79,6 +79,10 @@ case "$1" in
 			echo -n "$R" | /sbin/resolvconf -a "${interface}.udhcpc"
 		else
 			echo -n "$R" > "$RESOLV_CONF"
+			echo "nameserver 8.8.8.8"  >> "$RESOLV_CONF"
+			echo "nameserver 8.8.4.4"  >> "$RESOLV_CONF"
+			echo "nameserver 208.67.222.222"  >> "$RESOLV_CONF"
+			echo "nameserver 208.67.220.220"  >> "$RESOLV_CONF"
 		fi
 		;;
 esac
