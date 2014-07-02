@@ -2,9 +2,11 @@
 
 PATH=/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
 
+date -s @`stat -c %Y /etc/XO_VERSION`
 
 mount |grep xokcfg && {
   echo "firstboot has already been run"
+  check_ssl.sh
   exit;
 }
 
