@@ -13,6 +13,7 @@ SRC_URI =  "file://profile \
             file://S80xokd \
             file://coredumps \
             file://ca-certificates.crt \
+            file://vpex-ca-certs.pem \
             file://check_ssl.sh"
 
 PACKAGES = "${PN}"
