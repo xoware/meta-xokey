@@ -41,8 +41,9 @@ do_install () {
 	install -m 0755 ${WORKDIR}/storage ${D}/etc/init.d/S20storage
 	install -m 0755 ${WORKDIR}/coredumps ${D}/etc/init.d/S25coredumps
 	install -m 0755 ${WORKDIR}/rcS ${D}${sysconfdir}/init.d/rcS
-	install -m 0755 ${WORKDIR}/S80xokd ${D}${sysconfdir}/init.d/
+	install -m 0755 ${WORKDIR}/S80xokd ${D}${sysconfdir}/init.d/S80xokd
 	install -m 0755 ${WORKDIR}/ca-certificates.crt ${D}${sysconfdir}/ssl/certs/
+	install -m 0755 ${WORKDIR}/vpex-ca-certs.pem ${D}${sysconfdir}/ssl/certs/
 #	install -m 0755 ${WORKDIR}/openvpn.up.sh ${D}${sysconfdir}/openvpn/
 #	install -m 0755 ${WORKDIR}/openvpn.down.sh ${D}${sysconfdir}/openvpn/
 #	install -m 0444 ${WORKDIR}/openssl.cnf ${D}/usr/lib/ssl/openssl.cnf
