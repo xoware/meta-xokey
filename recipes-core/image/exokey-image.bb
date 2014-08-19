@@ -41,15 +41,14 @@ EXOKEY_PKGS += "memtester"
 EXOKEY_PKGS += "libnl-route libnl-genl"
 #EXOKEY_PKGS += "oprofile"
 
-#bug iproute2 rdepends on bash
-#EXOKEY_PKGS += "bash"
-#EXOKEY_PKGS += "iproute2"
 
 #install all kernel modules
 EXOKEY_PKGS += "kernel-modules"
 
 IMAGE_INSTALL = "packagegroup-core-boot ${ROOTFS_PKGMANAGE_BOOTSTRAP} ${CORE_IMAGE_EXTRA_INSTALL}  ${EXOKEY_PKGS}"
 
+#contains sigcheck util only needed in initramfs,  here for testing
+PACKAGE_INSTALL += " xomkimage "
 
 LICENSE_FLAGS_WHITELIST += "commercial"
 LICENSE_FLAGS_WHITELIST += "CLOSED"
@@ -79,6 +78,9 @@ do_rootfs_append () {
 	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
 	
 	#generate firmware image for update in linux UI
-	xomkimage ${DEPLOY_DIR_IMAGE}/uImage-initramfs-exokey.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+	cp ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed
+	xosignappend -f ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed
+	xomkimage ${DEPLOY_DIR_IMAGE}/uImage-initramfs-exokey.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
+	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 ${DEPLOY_DIR_IMAGE}/uImage-initramfs-exokey.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
 	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
 }
