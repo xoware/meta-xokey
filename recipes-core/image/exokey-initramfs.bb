@@ -19,6 +19,9 @@ PACKAGE_INSTALL += " kernel-module-atmel-usba-udc "
 PACKAGE_INSTALL += " kernel-module-usb-common "
 PACKAGE_INSTALL += " kernel-module-g-ether "
 
+#contains sigcheck util
+PACKAGE_INSTALL += " xomkimage "
+
 
 LICENSE_FLAGS_WHITELIST += "commercial "
 LICENSE_FLAGS_WHITELIST += "CLOSED "
