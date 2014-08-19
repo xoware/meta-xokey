@@ -43,7 +43,19 @@ rescue_shell() {
     exec setsid sh -c 'exec sh </dev/tty1 >/dev/tty1 2>&1'
 }
 
+setup_usb_eth () {
+	echo "setup_usb_eth"
+	modprobe atmel_usba_udc
+	modprobe g_ether
+	ip link set usb0 up
+#NOTE could take out udhcpc if we always use static and save 2 secs
+	udhcpc -i usb0 -b
+	ip addr add 192.168.255.1/30 brd 192.168.255.3 dev usb0
+}
+
 remote_rescue_shell() {
+    setup_usb_eth
+
     echo "Setting IP 10.64.1.8 up"
     # Bring up network interface
     ifconfig eth0 10.64.1.8 up
@@ -121,11 +133,33 @@ check_nfsmount() {
 check_fw_upgrade () {
 	if grep '"new_rootfs"' /proc/mtd > /dev/null 2>&1; then
 		echo "new_rootfs found"
-		ubirmvol /dev/ubi0  -N old_rootfs > /dev/null 2>&1
-		ubirename /dev/ubi0 rootfs old_rootfs new_rootfs rootfs
-		ubirmvol /dev/ubi0  -N old_rootfs > /dev/null 2>&1
-		
 		ROOTFS_MTD=`grep '"new_rootfs"' /proc/mtd |cut -d ':' -f1 |sed -e 's/mtd//'`
+		xosigcheck  -f /dev/mtd${ROOTFS_MTD}
+		if [ "$?" = '0' ]
+		then
+			ubirmvol /dev/ubi0  -N old_rootfs > /dev/null 2>&1
+			ubirename /dev/ubi0 rootfs old_rootfs new_rootfs rootfs
+			ubirmvol /dev/ubi0  -N old_rootfs > /dev/null 2>&1
+		else 
+			bad_msg "SIGNATURE FAIL MTD $ROOTFS_MTD failed."
+			echo "/proc/mounts:"
+			cat /proc/mounts
+			echo "/proc/mtd:"
+			cat /proc/mtd
+			echo "/dev:"
+			ubinfo -a
+			ls -la /dev
+			hexdump -n 64 -C $ROOTFS_MTD
+			mkdir -p /dev/pts
+			mount -t devpts none /dev/pts
+
+			check_tftp_upgrade
+			rescue_shell
+			exit
+		fi
+
+		
+		
 		mount -t squashfs /dev/mtdblock${ROOTFS_MTD}  /mnt/root/
 		if [ "$?" = '0' ]
 		then
@@ -164,14 +198,10 @@ rm_old_ubi_vols() {
 	fi
 }
 
+
+
 check_tftp_upgrade () {
-	echo "check_tftp_upgrade"
-	modprobe atmel_usba_udc
-	modprobe g_ether
-	ip link set usb0 up
-#NOTE could take out udhcpc if we always use static and save 2 secs
-	udhcpc -i usb0 -b
-	ip addr add 192.168.255.1/30 brd 192.168.255.3 dev usb0
+	setup_usb_eth
 	mount -t tmpfs -osize=32M tmpfs /tmp/
 	cd /tmp
 	rm_old_ubi_vols
@@ -205,8 +235,27 @@ mount_rootfs_squashfs_ubi () {
 		mount -t squashfs /dev/mtdblock${ROOTFS_MTD}  /mnt/root/
 		if [ "$?" = '0' ]
 		then
-			REAL_ROOT="/mnt/root"
-			mount_real_root
+			xosigcheck  -f /dev/mtd${ROOTFS_MTD}
+			if [ "$?" = '0' ]
+			then
+				REAL_ROOT="/mnt/root"
+				mount_real_root
+			else 
+				bad_msg "SIGNATURE FAIL MTD $ROOTFS_MTD failed."
+				echo "/proc/mounts:"
+				cat /proc/mounts
+				echo "/proc/mtd:"
+				cat /proc/mtd
+				echo "/dev:"
+				ubinfo -a
+				ls -la /dev
+				hexdump -n 64 -C $ROOTFS_MTD
+				mkdir -p /dev/pts
+				mount -t devpts none /dev/pts
+
+				check_tftp_upgrade
+				rescue_shell
+			fi
 		else 
 			bad_msg "Flash Mounting MTD $ROOTFS_MTD failed."
 			echo "/proc/mounts:"
@@ -241,6 +290,11 @@ mdev -s
 
 
 #mount -o ro /dev/md1 /mnt/root || rescue_shell
+
+if grep 'rescue=1' /proc/cmdline > /dev/null 2>&1; then
+	echo "rescue in cmd line"
+	remote_rescue_shell
+fi
 
 check_fw_upgrade
 check_nfsmount
