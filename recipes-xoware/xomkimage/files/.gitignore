@@ -1,0 +1,3 @@
+#don't copy our private key to this location require us to manually copy
+mkimage-key.sexp
+rootfs-key.sexp
