@@ -20,7 +20,7 @@ PACKAGE_INSTALL += " kernel-module-usb-common "
 PACKAGE_INSTALL += " kernel-module-g-ether "
 
 #contains sigcheck util
-PACKAGE_INSTALL += " xomkimage "
+PACKAGE_INSTALL += " libgcrypt xomkimage "
 
 
 LICENSE_FLAGS_WHITELIST += "commercial "
