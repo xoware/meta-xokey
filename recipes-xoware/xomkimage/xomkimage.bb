@@ -1,6 +1,9 @@
 DESCRIPTION = "Firmware Image generation"
 SECTION = "xoware"
 LICENSE = "CLOSED"
+
+DEPENDS = "libgcrypt"
+
 #BBCLASSEXTEND = "native"
 
 SRCREV = "master"
