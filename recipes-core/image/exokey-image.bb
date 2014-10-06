@@ -3,7 +3,7 @@ DESCRIPTION = "A small image just capable of allowing a device to boot."
 IMAGE_LINGUAS = " "
 
 LICENSE = "MIT"
-DEPENDS = "ek-firmware-native xomkimage-native"
+DEPENDS = "ek-firmware-native xomkimage-native u-boot-mkimage-native"
 
 inherit core-image deploy
 
@@ -60,14 +60,17 @@ INITRAMFS_IMAGE = "exokey-initramfs"
 do_rootfs_append () {
 	XO_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/XO_VERSION`
 	echo "XO_VERSION = $XO_VERSION"
-#	gen_firmware.sh ${DEPLOY_DIR_IMAGE} ${XO_VERSION}
-#	ln -sf EK_Firmware_${XO_VERSION}.bin ${DEPLOY_DIR_IMAGE}/EK_Firmware.bin
-	
-	SQUASH_SIZE=`stat -c %s ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs`
+
+	#sign squashfs
+	cp ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed
+	xosignappend -f ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed
+
+	#generate ubi file for usage with sam-ba
+	SQUASH_SIZE=`stat -c %s ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed`
 	echo "Squash size = ${SQUASH_SIZE}"
 	echo \[ubifs\] > ubinize.cfg 
 	echo mode=ubi >> ubinize.cfg
-	echo image=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs >> ubinize.cfg 
+	echo image=${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed >> ubinize.cfg 
 	echo vol_id=0 >> ubinize.cfg 
 	echo vol_type=dynamic >> ubinize.cfg 
 	echo vol_name=rootfs >> ubinize.cfg 
@@ -76,11 +79,12 @@ do_rootfs_append () {
 #	echo vol_flags=autoresize >> ubinize.cfg
 	ubinize -o ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.ubi ${UBINIZE_ARGS} ubinize.cfg
 	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
-	
+
+	#sign linux and create uboot FIT image
+	uboot-mkimage -D "-I dts -O dtb -p 2000" -k ${STAGING_ETCDIR_NATIVE}/keys -f ${DEPLOY_DIR_IMAGE}/sign_kernel_config_fit.its -r ${DEPLOY_DIR_IMAGE}/kernel.fit
+
 	#generate firmware image for update in linux UI
-	cp ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed
-	xosignappend -f ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed
-	xomkimage ${DEPLOY_DIR_IMAGE}/uImage-initramfs-exokey.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
-	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 ${DEPLOY_DIR_IMAGE}/uImage-initramfs-exokey.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+	xomkimage ${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
+	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 ${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
 	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
 }
