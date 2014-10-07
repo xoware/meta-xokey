@@ -23,12 +23,14 @@ EXOKEY_PKGS += "mtd-utils-ubifs"
 EXOKEY_PKGS += "mtd-utils-jffs2"
 EXOKEY_PKGS += "mtd-utils-misc"
 EXOKEY_PKGS += "openssl openssl-engines"
-EXOKEY_PKGS += "openvpn"
+#EXOKEY_PKGS += "openvpn"
 EXOKEY_PKGS += "iptables"
 #EXOKEY_PKGS += "cryptodev"
 EXOKEY_PKGS += "af-alg-engine"
 EXOKEY_PKGS += "strongswan strongswan-plugins"
 
+#build uboot
+EXOKEY_PKGS += "ek-uboot-at91"
 
 #Tools for now for debug/testing, remove for production
 EXOKEY_PKGS += "tcpdump"
@@ -57,6 +59,8 @@ RDEPENDS_kernel-base = ""
 INITRAMFS_FSTYPES = "cpio.gz"
 INITRAMFS_IMAGE = "exokey-initramfs"
 
+
+
 do_rootfs_append () {
 	XO_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/XO_VERSION`
 	echo "XO_VERSION = $XO_VERSION"
@@ -81,10 +85,11 @@ do_rootfs_append () {
 	ln -sf ${IMAGE_NAME}.rootfs.squashfs.ubi  ${DEPLOY_DIR_IMAGE}/rootfs.squashfs.ubi
 
 	#sign linux and create uboot FIT image
-	uboot-mkimage -D "-I dts -O dtb -p 2000" -k ${STAGING_ETCDIR_NATIVE}/keys -f ${DEPLOY_DIR_IMAGE}/sign_kernel_config_fit.its -r ${DEPLOY_DIR_IMAGE}/kernel.fit
+	cd ${DEPLOY_DIR_IMAGE}
+	uboot-mkimage -D "-I dts -O dtb -p 2000" -k ${STAGING_ETCDIR_NATIVE}/keys -f sign_kernel_config_fit.its -r kernel.fit
 
 	#generate firmware image for update in linux UI
-	xomkimage ${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
-	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 ${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+	xomkimage ${DEPLOY_DIR_IMAGE}/zImage-initramfs-exokey.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
+	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 ${DEPLOY_DIR_IMAGE}/u-boot-dtb.bin:mtd:1:0:mtd1:uBoot  ${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
 	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
 }
