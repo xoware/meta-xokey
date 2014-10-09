@@ -24,7 +24,9 @@ do_compile () {
 do_install () {
   install -d ${D}${bindir}
   install -m 0755 tools/mkimage ${D}${bindir}/uboot-mkimage
+  install -m 0755 tools/mkenvimage ${D}${bindir}/uboot-mkenvimage
   ln -sf uboot-mkimage ${D}${bindir}/mkimage
+  ln -sf uboot-mkenvimage ${D}${bindir}/mkenvimage
 }
 
 BBCLASSEXTEND = "native nativesdk"
