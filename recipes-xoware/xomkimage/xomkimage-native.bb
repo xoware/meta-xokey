@@ -38,6 +38,7 @@ do_install () {
 	install -m 755 ${S}/xosignappend ${STAGING_BINDIR_NATIVE}
 	mkdir -p ${DEPLOY_DIR_IMAGE}
 	install -m 755 ${WORKDIR}/sign_kernel_config_fit.its ${DEPLOY_DIR_IMAGE}
+	install -m 755 ${WORKDIR}/sign_kernel_config_fit.its ${STAGING_BINDIR_NATIVE}
 
 	#keep these keys safe
 	install -m 400 ${WORKDIR}/mkimage-key.sexp ${STAGING_BINDIR_NATIVE}
