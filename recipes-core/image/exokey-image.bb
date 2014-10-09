@@ -3,9 +3,12 @@ DESCRIPTION = "A small image just capable of allowing a device to boot."
 IMAGE_LINGUAS = " "
 
 LICENSE = "MIT"
+
 DEPENDS = "ek-firmware-native xomkimage-native u-boot-mkimage-native"
 
 inherit core-image deploy
+
+EXTRA_IMAGEDEPENDS = "xomkimage-native ek-uboot-at91" 
 
 IMAGE_ROOTFS_SIZE = "8192"
 
@@ -29,8 +32,6 @@ EXOKEY_PKGS += "iptables"
 EXOKEY_PKGS += "af-alg-engine"
 EXOKEY_PKGS += "strongswan strongswan-plugins"
 
-#build uboot
-EXOKEY_PKGS += "ek-uboot-at91"
 
 #Tools for now for debug/testing, remove for production
 EXOKEY_PKGS += "tcpdump"
@@ -51,6 +52,7 @@ IMAGE_INSTALL = "packagegroup-core-boot ${ROOTFS_PKGMANAGE_BOOTSTRAP} ${CORE_IMA
 
 #contains sigcheck util only needed in initramfs,  here for testing
 PACKAGE_INSTALL += " xomkimage "
+
 
 LICENSE_FLAGS_WHITELIST += "commercial"
 LICENSE_FLAGS_WHITELIST += "CLOSED"
@@ -88,8 +90,11 @@ do_rootfs_append () {
 	cd ${DEPLOY_DIR_IMAGE}
 	uboot-mkimage -D "-I dts -O dtb -p 2000" -k ${STAGING_ETCDIR_NATIVE}/keys -f sign_kernel_config_fit.its -r kernel.fit
 
+	mkimage -A arm -O linux -T kernel -C none -a ${UBOOT_LOADADDRESS} -e ${UBOOT_ENTRYPOINT} -n "Linux kernel" -d  ${DEPLOY_DIR_IMAGE}/zImage-initramfs-exokey.bin uImage.bin
+	
 	#generate firmware image for update in linux UI
-	xomkimage ${DEPLOY_DIR_IMAGE}/zImage-initramfs-exokey.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
+	xomkimage ${DEPLOY_DIR_IMAGE}/uImage.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
 	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 ${DEPLOY_DIR_IMAGE}/u-boot-dtb.bin:mtd:1:0:mtd1:uBoot  ${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/EK_firmware_unsigned.img
 	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
 }
