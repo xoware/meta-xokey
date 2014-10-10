@@ -4,11 +4,11 @@ IMAGE_LINGUAS = " "
 
 LICENSE = "MIT"
 
-DEPENDS = "ek-firmware-native xomkimage-native u-boot-mkimage-native"
+DEPENDS = "ek-firmware-native xomkimage-native "
 
 inherit core-image deploy
 
-EXTRA_IMAGEDEPENDS = "xomkimage-native ek-uboot-at91" 
+EXTRA_IMAGEDEPENDS = "xomkimage-native ek-uboot-at91 u-boot-mkimage-native" 
 
 IMAGE_ROOTFS_SIZE = "8192"
 
@@ -90,11 +90,42 @@ do_rootfs_append () {
 	cd ${DEPLOY_DIR_IMAGE}
 	uboot-mkimage -D "-I dts -O dtb -p 2000" -k ${STAGING_ETCDIR_NATIVE}/keys -f sign_kernel_config_fit.its -r kernel.fit
 
+	#make uImage for unsigned version
 	mkimage -A arm -O linux -T kernel -C none -a ${UBOOT_LOADADDRESS} -e ${UBOOT_ENTRYPOINT} -n "Linux kernel" -d  ${DEPLOY_DIR_IMAGE}/zImage-initramfs-exokey.bin uImage.bin
-	
-	#generate firmware image for update in linux UI
-	xomkimage ${DEPLOY_DIR_IMAGE}/uImage.bin:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
-	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 ${DEPLOY_DIR_IMAGE}/u-boot-dtb.bin:mtd:1:0:mtd1:uBoot  ${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage  ${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+
+	echo "bootdelay=1"  > uboot_env.cfg
+	echo "baudrate=115200" >> uboot_env.cfg
+	echo "stdin=serial" >> uboot_env.cfg
+	echo "stdout=serial" >> uboot_env.cfg
+	echo "stderr=serial" >> uboot_env.cfg
+	echo "usbnet_devaddr=00:01:02:03:ab:cd" >> uboot_env.cfg
+	echo "usbnet_hostaddr=00:01:02:03:ab:ce" >> uboot_env.cfg
+	echo "ipaddr=192.168.255.1" >> uboot_env.cfg
+	echo "serverip=192.168.255.2" >> uboot_env.cfg
+	echo "bootargs=console=ttyS0,115200 mtdparts=atmel_nand:256K(bs),512K(ub),256K(env),512K(env_r),512K(dtb),6M(ker),8M(cfg),-(store) root=/dev/ram0 ubi.mtd=7" >> uboot_env.cfg
+	echo "bootcmd=nand read 0x20000000 0x200000 0x600000; bootm 0x20000000; bootm 0x22000000 - 0x21000000" >> uboot_env.cfg
+
+	mkenvimage -s 0x20000 -r -o uboot_env.bin uboot_env.cfg
+
+	#generate firmware image for update in linux UI  
+	xomkimage ${DEPLOY_DIR_IMAGE}/uImage.bin:mtd:5:0:mtd5:uImage  \
+		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  \
+		> ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
+
+	#generate signed version
+	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 \
+		${DEPLOY_DIR_IMAGE}/u-boot-dtb.bin:mtd:1:0:mtd1:uBoot \
+		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:2:0:mtd2:uBEnv \
+		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:3:0:mtd3:uBEnv_r \
+		${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage \
+		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+		
+	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 \
+		${DEPLOY_DIR_IMAGE}/u-boot-dtb.bin:mtd:1:0:mtd1:uBoot \
+		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:2:0:mtd2:uBEnv \
+		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:3:0:mtd3:uBEnv_r \
+		${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage \
+		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_with_bootldr.img
 	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/EK_firmware_unsigned.img
 	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
 }

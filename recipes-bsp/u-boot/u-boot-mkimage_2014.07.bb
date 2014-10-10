@@ -5,7 +5,7 @@ LIC_FILES_CHKSUM = "file://README;beginline=1;endline=22;md5=2687c5ebfd9cb284491
 SECTION = "bootloader"
 
 
-SRCREV = "856093a0b710f8878fc2dc75d53c6df8295e8c85"
+SRCREV = "01f796ba965a23210af487e985fa8ff61d1190e3"
 
 PV = "v2014.07-at91"
 PR = "r1"
