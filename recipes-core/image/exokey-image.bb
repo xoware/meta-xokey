@@ -31,6 +31,8 @@ EXOKEY_PKGS += "iptables"
 #EXOKEY_PKGS += "cryptodev"
 EXOKEY_PKGS += "af-alg-engine"
 EXOKEY_PKGS += "strongswan strongswan-plugins"
+EXOKEY_PKGS += "glib-2.0"
+EXOKEY_PKGS += "libnice"
 
 
 #Tools for now for debug/testing, remove for production
