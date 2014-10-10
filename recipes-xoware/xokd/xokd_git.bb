@@ -3,6 +3,8 @@ SECTION = "base"
 LICENSE = "CLOSED"
 DEPENDS = "libgcrypt gnutls curl libmicrohttpd libnl jansson file"
 
+DEPENDS += "glib-2.0 libnice"
+
 SRCREV = "master"
 #SRCREV_ = "${AUTOREV}"
 #PV = "0.1+git${SRCPV}"
