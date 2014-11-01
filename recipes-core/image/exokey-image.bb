@@ -33,9 +33,12 @@ EXOKEY_PKGS += "af-alg-engine"
 EXOKEY_PKGS += "strongswan strongswan-plugins"
 EXOKEY_PKGS += "glib-2.0"
 EXOKEY_PKGS += "libnice"
+EXOKEY_PKGS += "dnsmasq"
+
 
 
 #Tools for now for debug/testing, remove for production
+EXOKEY_PKGS += "gdbserver"
 EXOKEY_PKGS += "tcpdump"
 EXOKEY_PKGS += "strace"
 EXOKEY_PKGS += "iperf"
@@ -63,6 +66,8 @@ RDEPENDS_kernel-base = ""
 INITRAMFS_FSTYPES = "cpio.gz"
 INITRAMFS_IMAGE = "exokey-initramfs"
 
+do_rootfs[depends] += "ek-uboot-at91:do_deploy"
+#do_rootfs[depends] += "exokey-initramfs:do_deploy"
 
 
 do_rootfs_append () {
