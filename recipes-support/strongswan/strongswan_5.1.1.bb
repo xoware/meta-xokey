@@ -13,7 +13,8 @@ SRC_URI[sha256sum] = "fbf2a668221fc4a36a34bdeac2dfeda25b96f572d551df022585177953
 
 EXTRA_OECONF = "--enable-curl --disable-soup --disable-ldap \
         --enable-gmp --disable-mysql --disable-sqlite \
-        --enable-openssl --enable-gcrypt --enable-nonce"
+        --enable-openssl --enable-gcrypt --enable-nonce \
+	--enable-socket-dynamic "
 
 #EXTRA_OECONF += "${@base_contains('DISTRO_FEATURES', 'systemd', '--with-systemdsystemunitdir=${systemd_unitdir}/system/', '--without-systemdsystemunitdir', d)}"
 
