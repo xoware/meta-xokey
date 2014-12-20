@@ -15,6 +15,8 @@ inherit autotools pkgconfig
 EXTRA_OECONF="--enable-exokey"
 
 SRC_URI = "git://github.com/xoware/xokd.git;branch=master;protocol=ssh;user=git"
+#for local shared xokd git work repo shared between en and ek uncomment next 2 lines
+#SRCREV = "local"
 #SRC_URI = "git:///mnt/xo/guest/xokd;branch=local;protocol=file"
 S = "${WORKDIR}/git"
 
