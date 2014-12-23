@@ -14,6 +14,7 @@ SRC_URI =  "file://profile \
             file://coredumps \
             file://ca-certificates.crt \
             file://vpex-ca-certs.pem \
+            file://xokd-watcher.sh \
             file://check_ssl.sh"
 
 PACKAGES = "${PN}"
@@ -31,6 +32,7 @@ do_install () {
 	install -d ${D}/xokcfg
 	install -d ${D}/storage
 	install -d ${D}/usr
+	install -d ${D}/usr/bin
 	install -d ${D}/usr/lib
 	install -d ${D}/usr/lib/ssl
 	install -m 0755 ${WORKDIR}/profile ${D}/etc/profile.d/
@@ -44,6 +46,7 @@ do_install () {
 	install -m 0755 ${WORKDIR}/S80xokd ${D}${sysconfdir}/init.d/S80xokd
 	install -m 0755 ${WORKDIR}/ca-certificates.crt ${D}${sysconfdir}/ssl/certs/
 	install -m 0755 ${WORKDIR}/vpex-ca-certs.pem ${D}${sysconfdir}/ssl/certs/
+	install -m 0755 ${WORKDIR}/xokd-watcher.sh  ${D}/usr/bin
 #	install -m 0755 ${WORKDIR}/openvpn.up.sh ${D}${sysconfdir}/openvpn/
 #	install -m 0755 ${WORKDIR}/openvpn.down.sh ${D}${sysconfdir}/openvpn/
 #	install -m 0444 ${WORKDIR}/openssl.cnf ${D}/usr/lib/ssl/openssl.cnf
