@@ -1,3 +1,4 @@
 #!/bin/sh
 
-/usr/bin/xokd -d
+#/usr/bin/xokd -d
+/usr/bin/xokd-watcher.sh &
