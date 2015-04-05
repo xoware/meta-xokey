@@ -17,7 +17,7 @@
 
 # Run any rc scripts
 ::sysinit:/etc/init.d/rcS
-::sysinit:/bin/ip link set lo up
+::sysinit:/sbin/ip link set lo up
 
 # Run a shell on the first serial port. Comment this out if you want
 # a getty instead

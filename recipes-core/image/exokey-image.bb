@@ -12,6 +12,8 @@ EXTRA_IMAGEDEPENDS = "xomkimage-native ek-uboot-at91 u-boot-mkimage-native"
 
 IMAGE_ROOTFS_SIZE = "8192"
 
+#TODO test this with 1
+BUSYBOX_SPLIT_SUID = "0"
 
 # remove not needed ipkg information
 ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
