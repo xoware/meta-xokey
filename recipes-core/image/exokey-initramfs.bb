@@ -9,6 +9,9 @@ inherit core-image
 
 IMAGE_ROOTFS_SIZE = "8192"
 
+#TODO test this with 1
+BUSYBOX_SPLIT_SUID = "0"
+
 # remove not needed ipkg information
 #ROOTFS_POSTPROCESS_COMMAND += "remove_packaging_data_files ; "
 

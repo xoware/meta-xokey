@@ -6,6 +6,7 @@ DEPENDS = "openssl"
 SRC_URI =  "file://profile \
             file://.keep \
             file://firstboot \
+            file://inittab \
             file://storage \
             file://openvpn.up.sh \
             file://openvpn.down.sh \
@@ -47,6 +48,7 @@ do_install () {
 	install -m 0755 ${WORKDIR}/ca-certificates.crt ${D}${sysconfdir}/ssl/certs/
 	install -m 0755 ${WORKDIR}/vpex-ca-certs.pem ${D}${sysconfdir}/ssl/certs/
 	install -m 0755 ${WORKDIR}/xokd-watcher.sh  ${D}/usr/bin
+	install -m 0644 ${WORKDIR}/inittab ${D}${sysconfdir}/
 #	install -m 0755 ${WORKDIR}/openvpn.up.sh ${D}${sysconfdir}/openvpn/
 #	install -m 0755 ${WORKDIR}/openvpn.down.sh ${D}${sysconfdir}/openvpn/
 #	install -m 0444 ${WORKDIR}/openssl.cnf ${D}/usr/lib/ssl/openssl.cnf
