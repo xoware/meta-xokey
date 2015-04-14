@@ -43,6 +43,6 @@ EXTRA_OECONF = " --disable-gupnp --without-gstreamer --disable-gtk-doc "
 #SRC_URI[md5sum] = "e5b9f799a57cb939ea2658ec35253ab9"
 #SRC_URI[sha256sum] = "d8dd260c486a470a6052a5323920878a084e44a19df09b15728b85c9e3d6edf0"
 
-SRC_URI[md5sum] = "ed74abea19b3f049baf095f137388f2a"
-SRC_URI[sha256sum] = "4ed165aa2203136dce548c7cef735d8becf5d9869793f96b99dcbbaa9acf78d8"
+SRC_URI[md5sum] = "27b62d0093ce29a39df1c6fcf0bb4396"
+SRC_URI[sha256sum] = "1dbfb663b730889ae8cab13a2913fe557d581f70b513c918bbbd0b7d3eefebc9"
 
