@@ -13,6 +13,7 @@ while [ -e /proc/${XOKD_PID} ]; do
 done
 
 logger "xokd ${XOKD_PID} exited"
+logread | gzip -c  > /storage/core/log.gz
 
 #sleep to allow deugging
 sleep 20
