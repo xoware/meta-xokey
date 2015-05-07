@@ -12,7 +12,7 @@
 ::sysinit:/etc/init.d/mdev
 
 #NOTE comment  this telnetd out, for now usefull for debug
-::sysinit:telnetd -l /bin/sh
+#::sysinit:telnetd -l /bin/sh
 #::sysinit:telnetd -l /usr/bin/xosh
 
 # Run any rc scripts
