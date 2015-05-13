@@ -13,6 +13,9 @@ PR = "r0"
 inherit autotools pkgconfig 
 
 EXTRA_OECONF="--enable-exokey"
+CFLAGS += "-fstack-protector-all -pie -fpie"
+LDFLAGS += "-Wl,-z,relro,-z,now"
+
 
 SRC_URI = "git://github.com/xoware/xokd.git;branch=master;protocol=ssh;user=git"
 #for local shared xokd git work repo shared between en and ek uncomment next 2 lines
