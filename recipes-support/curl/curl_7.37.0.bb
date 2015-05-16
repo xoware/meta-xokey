@@ -5,7 +5,7 @@ SECTION = "console/network"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://COPYING;beginline=7;md5=3a34942f4ae3fbf1a303160714e664ac"
 
-DEPENDS = "zlib openssl"
+DEPENDS = "zlib openssl c-ares"
 DEPENDS_class-native = "zlib-native openssl-native"
 DEPENDS_class-nativesdk = "nativesdk-zlib"
 PR = "r2"
@@ -32,6 +32,7 @@ EXTRA_OECONF = "--with-zlib=${STAGING_LIBDIR}/../ \
                 --without-libssh2 \
                 --with-random=/dev/urandom \
                 --without-libidn \
+		--enable-ares\
                 --enable-crypto-auth \
                 --disable-ldap \
                 --disable-ldaps \
