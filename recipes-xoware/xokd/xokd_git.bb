@@ -29,3 +29,6 @@ S = "${WORKDIR}/git"
 
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+FILES_${PN} += "${base_libdir}/security/pam_xokd.*"
+FILES_${PN}-dbg += "${base_libdir}/security/.debug/pam_xokd.*"
