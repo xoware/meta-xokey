@@ -118,9 +118,9 @@ do_rootfs_append () {
 	mkenvimage -s 0x20000 -r -o uboot_env.bin uboot_env.cfg
 
 	#generate firmware image for update in linux UI  
-	xomkimage ${DEPLOY_DIR_IMAGE}/uImage.bin:mtd:5:0:mtd5:uImage  \
-		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  \
-		> ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
+#	xomkimage ${DEPLOY_DIR_IMAGE}/uImage.bin:mtd:5:0:mtd5:uImage  \
+#		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  \
+#		> ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
 
 	#generate signed version
 	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 \
