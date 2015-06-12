@@ -23,6 +23,9 @@ while [ -e /proc/${XOKD_PID} ]; do
 	sleep 2 
 done
 
+# allow a debug connection on crash
+telnetd -l /bin/sh
+
 logger "xokd ${XOKD_PID} exited"
 logread | gzip -c  > /storage/core/log.gz
 
