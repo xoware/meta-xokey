@@ -11,8 +11,8 @@ DEPENDS += "openssl"
 
 SRCREV = "1851bbb010c38878c83729be844f168192059189"
 
-SRC_URI = "git://git.carnivore.it/users/common/af_alg.git;protocol=git "
-SRC_URL + = "git://github.com/xoware/af_ag;protocol=git"
+#SRC_URI = "git://git.carnivore.it/users/common/af_alg.git;protocol=git "
+SRC_URL = "git://github.com/xoware/af_ag;protocol=git"
 S = "${WORKDIR}/git"
 
 #inherit externalsrc
