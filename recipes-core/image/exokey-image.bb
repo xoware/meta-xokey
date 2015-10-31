@@ -120,7 +120,7 @@ do_rootfs_append () {
 	#generate firmware image for update in linux UI  
 #	xomkimage ${DEPLOY_DIR_IMAGE}/uImage.bin:mtd:5:0:mtd5:uImage  \
 #		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  \
-#		> ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
+#		> ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}_unsigned.img
 
 	#generate signed version
 	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 \
@@ -128,8 +128,8 @@ do_rootfs_append () {
 		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:2:0:mtd2:uBEnv \
 		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:3:0:mtd3:uBEnv_r \
 		${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage \
-		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}.img
 		
-	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/EK_firmware_unsigned.img
-	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
+#	ln -sf ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/XOkey_firmware_unsigned.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/XOkey_firmware.img
 }
