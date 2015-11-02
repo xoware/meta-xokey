@@ -51,6 +51,7 @@ PACKAGE_CLASSES ?= "package_ipk"
 DISTRO_FEATURES_append += " pam"
 INITRAMFS_IMAGE = "exokey-initramfs"
 INITRAMFS_IMAGE_BUNDLE = "1"
+FILESYSTEM_PERMS_TABLES = "files/fs-perms.txt"
 
 
 Optional to build faster:
