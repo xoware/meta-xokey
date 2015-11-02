@@ -73,9 +73,8 @@ INITRAMFS_IMAGE = "exokey-initramfs"
 do_rootfs[depends] += "ek-uboot-at91:do_deploy"
 #do_rootfs[depends] += "exokey-initramfs:do_deploy"
 
-
 gen_xoware_img () {
-	XO_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/XO_VERSION`
+	XO_VERSION=`cat ${IMAGE_ROOTFS}/etc/XO_VERSION`
 	echo "XO_VERSION = $XO_VERSION"
 
 	#sign squashfs
@@ -124,15 +123,15 @@ gen_xoware_img () {
 #		> ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
 
 	#generate signed version
-	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 \
+	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.1.20150630 \
 		${DEPLOY_DIR_IMAGE}/u-boot-dtb.bin:mtd:1:0:mtd1:uBoot \
 		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:2:0:mtd2:uBEnv \
 		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:3:0:mtd3:uBEnv_r \
 		${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage \
-		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
+		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/XK_firmware_${XO_VERSION}.img
 		
-	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/EK_firmware_unsigned.img
-	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
+#	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/EK_firmware_unsigned.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/XK_firmware.img
 }
 
 
