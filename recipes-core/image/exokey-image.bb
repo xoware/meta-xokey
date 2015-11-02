@@ -131,7 +131,7 @@ gen_xoware_img () {
 		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/XK_firmware_${XO_VERSION}.img
 		
 #	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/EK_firmware_unsigned.img
-	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/XK_firmware.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/XK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/XK_firmware.img
 }
 
 
