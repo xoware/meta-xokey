@@ -33,9 +33,4 @@ LICENSE_FLAGS_WHITELIST += "CLOSED "
 KERNEL_IMAGETYPE = "uImage"
 IMAGE_FSTYPES = "cpio.gz"
 IMAGE_DEVICE_TABLES = "files/ek_device_table.txt"
-
-
-do_rootfs_append () {
-	
-#	echo "XO_VERSION = $XO_VERSION"
-}
+USE_DEVFS = "0"

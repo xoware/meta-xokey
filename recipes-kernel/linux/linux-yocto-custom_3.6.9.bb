@@ -46,19 +46,29 @@ require recipes-kernel/linux/linux-yocto.inc
 LINUX_VERSION ?= "3.6.9"
 LINUX_VERSION_EXTENSION ?= "-custom"
 KBRANCH ?= "3.6.9-at91"
+KBRANCH = "linux-3.6.9-at91"
 
 # Override SRC_URI in a bbappend file to point at a different source
 # tree if you do not want to build from Linus' tree.
 #SRC_URI = "git://github.com/linux4sam/linux-at91.git;protocol=git;branch=${KBRANCH};nocheckout=1"
-SRC_URI = "git://github.com/karlhiramoto/linux-at91;protocol=git;branch=${KBRANCH};nocheckout=1"
+SRC_URI = "git://github.com/karlhiramoto/linux-at91;protocol=git;branch=${KBRANCH}"
 SRC_URI += "file://defconfig"
 
-#INITRAMFS_IMAGE = "exokey-initramfs"
+SRC_URI += "file://0001-dma-at91-avoid-possible-deadlock-in-atc_tx_status.patch \ 
+	file://0001-crypto-scatterwalk-Set-the-chain-pointer-indication-.patch \
+	file://0001-crypto-scatterwalk-Use-sg_chain_ptr-on-chain-entries.patch \
+	file://0001-cryto-atmel-sha-add-HMAC-ahash_alg.patch \
+	file://no-usb-vbus-sense.patch \
+	file://clocksource-debug.patch \
+	file://ignore_mtd_readonly.patch \
+	file://usb_eth_rndis_xoware.patch "
+#	file://gpio_sysfs.cfg "
 
-# Override SRCREV to point to a different commit in a bbappend file to
-# build a different release of the Linux kernel.
-# tag: v3.4 76e10d158efb6d4516018846f60c2ab5501900bc
-SRCREV="59134b04621dd73254d54cb67d9ffbf4f626dbc5"
+
+
+
+SRCREV="e5fb8621b409acf95c64d543102e2c89aa006b42"
+SRCREV_machine="e5fb8621b409acf95c64d543102e2c89aa006b42"
 PV = "${LINUX_VERSION}+${SRCREV}"
 
 
@@ -66,5 +76,30 @@ PR = "r1"
 
 # Override COMPATIBLE_MACHINE to include your machine in a bbappend
 # file. Leaving it empty here ensures an early explicit build failure.
-COMPATIBLE_MACHINE = "(sama5d3xek|at91sam9x5ek)"
+COMPATIBLE_MACHINE = "(sama5d3xek|at91sam9x5ek|exokey)"
+KMACHINE="sama5d3"
+
+
+# This branch is now maintained with fixes,
+# though we will use a particular commit via SRCREV.
+
+
+# path to get defconfig from
+FILESEXTRAPATHS_prepend := "${THISDIR}/linux-3.6:" 
+
+
+LINUX_KERNEL_TYPE ?= "standard"
+LINUX_VERSION_EXTENSION = "-xoware"
+
+#disable parallel make install incase this fixes race
+PARALLEL_MAKEINST=""
+
+do_configure_prepend(){
+	echo "IN CONFIGURE PREPEND"
+	echo "B = ${B}"
+	echo "S = ${S}"
+	#cp -v ${B}/../defconfig ${B}/.config
+}
+
+
 

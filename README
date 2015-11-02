@@ -7,8 +7,8 @@ Build procedure:
 git clone git://git.yoctoproject.org/poky
 
 
-2 Checkout dora (10.X) branch 
-cd poky && git checkout dora -b my_branch
+2 Checkout dora (12.X) branch 
+cd poky && git checkout dizzy -b my_branch
 
 Skip step 3
 #3. Clone meta-atmel layer

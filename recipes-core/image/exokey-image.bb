@@ -32,7 +32,8 @@ EXOKEY_PKGS += "openssl openssl-engines"
 EXOKEY_PKGS += "iptables"
 #EXOKEY_PKGS += "cryptodev"
 #EXOKEY_PKGS += "af-alg-engine"
-EXOKEY_PKGS += "strongswan strongswan-plugins"
+EXOKEY_PKGS += "strongswan"
+#strongswan-plugins"
 EXOKEY_PKGS += "glib-2.0"
 EXOKEY_PKGS += "libnice"
 EXOKEY_PKGS += "dnsmasq"
@@ -73,7 +74,7 @@ do_rootfs[depends] += "ek-uboot-at91:do_deploy"
 #do_rootfs[depends] += "exokey-initramfs:do_deploy"
 
 
-do_rootfs_append () {
+gen_xoware_img () {
 	XO_VERSION=`cat ${INSTALL_ROOTFS_IPK}/etc/XO_VERSION`
 	echo "XO_VERSION = $XO_VERSION"
 
@@ -120,7 +121,7 @@ do_rootfs_append () {
 	#generate firmware image for update in linux UI  
 #	xomkimage ${DEPLOY_DIR_IMAGE}/uImage.bin:mtd:5:0:mtd5:uImage  \
 #		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  \
-#		> ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}_unsigned.img
+#		> ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img
 
 	#generate signed version
 	xomkimage_v1 ExoKey_v1 $XO_VERSION 1.0.20140801 \
@@ -128,8 +129,14 @@ do_rootfs_append () {
 		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:2:0:mtd2:uBEnv \
 		${DEPLOY_DIR_IMAGE}/uboot_env.bin:mtd:3:0:mtd3:uBEnv_r \
 		${DEPLOY_DIR_IMAGE}/kernel.fit:mtd:5:0:mtd5:uImage \
-		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}.img
+		${DEPLOY_DIR_IMAGE}/${IMAGE_NAME}.rootfs.squashfs.signed:ubivol:0:0:ubi0:new_rootfs  > ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img
 		
-#	ln -sf ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/XOkey_firmware_unsigned.img
-	ln -sf ${DEPLOY_DIR_IMAGE}/XOkey_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/XOkey_firmware.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}_unsigned.img ${DEPLOY_DIR_IMAGE}/EK_firmware_unsigned.img
+	ln -sf ${DEPLOY_DIR_IMAGE}/EK_firmware_${XO_VERSION}.img ${DEPLOY_DIR_IMAGE}/EK_firmware.img
 }
+
+
+IMAGE_POSTPROCESS_COMMAND = " gen_xoware_img ; "
+FILESYSTEM_PERMS_TABLES = "files/fs-perms.txt"
+
+
