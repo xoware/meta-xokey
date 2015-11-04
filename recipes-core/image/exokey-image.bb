@@ -38,6 +38,7 @@ EXOKEY_PKGS += "glib-2.0"
 EXOKEY_PKGS += "libnice"
 EXOKEY_PKGS += "dnsmasq"
 EXOKEY_PKGS += "dropbear"
+EXOKEY_PKGS += "libpam"
 
 
 
