@@ -61,6 +61,7 @@ SRC_URI += "file://0001-dma-at91-avoid-possible-deadlock-in-atc_tx_status.patch 
 	file://no-usb-vbus-sense.patch \
 	file://clocksource-debug.patch \
 	file://ignore_mtd_readonly.patch \
+	file://fix-build-on-newer-perl-versions.patch \
 	file://usb_eth_rndis_xoware.patch "
 #	file://gpio_sysfs.cfg "
 
