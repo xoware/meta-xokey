@@ -5,8 +5,8 @@ DEPENDS = "libgcrypt gnutls curl libmicrohttpd libnl jansson file c-ares libpam"
 
 DEPENDS += "glib-2.0 libnice"
 
-SRCREV = "master"
-#SRCREV_ = "${AUTOREV}"
+#SRCREV = "HEAD"
+SRCREV = "${AUTOREV}"
 #PV = "0.1+git${SRCPV}"
 PR = "r0"
 
@@ -16,15 +16,15 @@ EXTRA_OECONF="--enable-exokey  --with-pam-mods-dir=${base_libdir}/security"
 CFLAGS += "-fstack-protector-all -pie -fpie"
 LDFLAGS += "-Wl,-z,relro,-z,now"
 
-
 SRC_URI = "git://github.com/xoware/xokd.git;branch=master;protocol=ssh;user=git"
-#for local shared xokd git work repo shared between en and ek uncomment next 2 lines
-#SRCREV = "local"
 #SRC_URI = "git:///mnt/xo/guest/xokd;branch=local;protocol=file"
+
+
 S = "${WORKDIR}/git"
 
 #uncomment this to build code on local PC not on git repo
-#inherit externalsrc
+# inherit externalsrc
+#S = "/root/oe-yocto/xokd"
 #S = "/home/karl/Work/xoware/xokd"
 
 
