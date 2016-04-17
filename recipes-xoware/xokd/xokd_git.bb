@@ -1,7 +1,7 @@
 DESCRIPTION = "Daemon to handle device specifc features."
 SECTION = "base"
 LICENSE = "CLOSED"
-DEPENDS = "libgcrypt gnutls curl libmicrohttpd libnl jansson file c-ares libpam"
+DEPENDS = "libgcrypt gnutls curl libmicrohttpd libnl jansson file c-ares libpam libpnc"
 
 DEPENDS += "glib-2.0 libnice"
 
