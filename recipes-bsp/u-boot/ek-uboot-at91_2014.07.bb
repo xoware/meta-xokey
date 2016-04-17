@@ -11,7 +11,7 @@ LIC_FILES_CHKSUM = "file://README;beginline=1;endline=22;md5=2687c5ebfd9cb284491
 
 
 DEPENDS = "dtc-native"
-SRCREV = "4f28dd0d23fbe16db1a08bc48434c7e0caa2f54c"
+SRCREV = "d93daad5e0578ea35e055e6693697f6fa2bf8957"
 PV = "v2014.07-at91"
 PR = "r2"
 
