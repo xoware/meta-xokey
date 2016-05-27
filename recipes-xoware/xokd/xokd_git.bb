@@ -12,7 +12,7 @@ PR = "r0"
 
 inherit autotools pkgconfig 
 
-EXTRA_OECONF="--enable-exokey  --with-pam-mods-dir=${base_libdir}/security"
+EXTRA_OECONF="--enable-exokey --enable-dnsmasq  --with-pam-mods-dir=${base_libdir}/security"
 CFLAGS += "-fstack-protector-all -pie -fpie"
 LDFLAGS += "-Wl,-z,relro,-z,now"
 
